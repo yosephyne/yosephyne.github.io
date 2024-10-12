@@ -11,8 +11,10 @@ cascade:
 Lisa brings your content to life :pinched_fingers:
 {{< /lead >}}
 
-This section contains some demo pages that show how Congo renders different types of content. You can also see an example [taxonomy listing]({{< ref "tags" >}}) page.
+## Welcome to My Website
 
-_**Sidenote:** This page is just a standard Congo article listing and Hugo has been configured to generate a `samples` content type and display article summaries._
+I am Lisa Marie Josefine Eichhöfer, a student of Social and Business Communication at the Berlin University of the Arts (UdK Berlin). I have professional experience in social media branding, human resources, and communication. My particular interest lies in how communication is evolving through artificial intelligence.
+
+For more details, please visit the [About](about/) page.
 
 ---
