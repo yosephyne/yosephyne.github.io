@@ -2,9 +2,10 @@
 {{ if $image }}
   {{ $width := .Get 1 | default "100%" }}  <!-- Prozentuale Breite, Standard auf 100% -->
   {{ $align := .Get 2 | default "center" }} <!-- Standardausrichtung auf zentriert -->
+  {{ $radius := .Get 3 | default "0px" }}   <!-- Radius für die Ecken, Standard auf 0px (keine Abrundung) -->
 
   <div style="text-align: {{ $align }};">
-      <img src="{{ $image.Permalink }}" alt="Image" style="width: {{ $width }}; height: auto;">
+      <img src="{{ $image.Permalink }}" alt="Image" style="width: {{ $width }}; height: auto; border-radius: {{ $radius }};">
   </div>
 {{ else }}
   <p>Bild nicht gefunden: {{ .Get 0 }}</p>

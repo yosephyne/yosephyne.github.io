@@ -11,7 +11,7 @@ showReadingTime: false
 showEdit: false
 ---
 
-{{< fitimage "me.jpg" "20%" "left" >}}
+{{< fitimage "me.jpg" "20%" "left" "5px">}}
 
 {{< lead >}}
 What Lisa has been doing before.
