@@ -1,8 +1,11 @@
 ---
 title: "ChatGPT Bots"
 date: 2024-03-04
+draft: false
 description: "A collection of Chatbots I have created, each tailored to specific tasks and industries."
 tags: ["AI", "ChatGPT", "Chatbot"]
+slug: "chat-bots"
+showWordCount: true
 ---
 
 ## My Chatbot Creations
