@@ -8,7 +8,7 @@ cascade:
 ---
 
 {{< lead >}}
-Lisa brings your content to life :pinched_fingers:
+Turning _what if_ into _why not_ — one project at a time. :pinched_fingers:
 {{< /lead >}}
 
 ## Welcome to My Website

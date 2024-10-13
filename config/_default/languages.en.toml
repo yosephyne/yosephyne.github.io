@@ -15,7 +15,7 @@ title = "Lisa Eichhöfer"
 [params.author]
   name = "Lisa Marie Josefine Eichhöfer"
   image = "img/author.jpg"
-  headline = "I'm only human"
+  headline = "Student"
   # bio = "A little bit about you"
   links = [
   #   { email = "mailto:hello@your_domain.com" },

@@ -5,7 +5,7 @@ draft: false
 description: "A collection of Chatbots I have created, each tailored to specific tasks and industries."
 tags: ["AI", "ChatGPT", "Chatbot"]
 slug: "chat-bots"
-showWordCount: true
+showWordCount: false
 ---
 
 ## My Chatbot Creations
