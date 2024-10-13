@@ -14,7 +14,7 @@ showEdit: false
 {{< fitimage "me.jpg" "20%" "left" "5px">}}
 
 {{< lead >}}
-What Lisa has been doing before.
+Milestones that have shaped my journey so far.
 {{< /lead >}}
 
 ### Quick Profile

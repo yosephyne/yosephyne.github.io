@@ -1,6 +1,6 @@
 ---
-title: "Documentation"
-description: "Learn how to use Congo and its features."
+title: "Portfolio"
+description: "My Portfolio"
 
 cascade:
   showDate: false
@@ -9,6 +9,8 @@ cascade:
   invertPagination: true
 ---
 
-Test
+{{< lead >}}
+Projects and collaborations that shape my path.
+{{< /lead >}}
 
 ---
