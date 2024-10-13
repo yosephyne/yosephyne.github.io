@@ -1,6 +1,6 @@
 ---
 title: "Acting Job: Video Project"
-date: 2024-10-12
+date: 2019-12-02
 description: "A video project where I participated as an actress in a paid role."
 ---
 

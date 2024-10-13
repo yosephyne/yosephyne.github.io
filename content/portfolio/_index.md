@@ -3,7 +3,7 @@ title: "Portfolio"
 description: "My Portfolio"
 
 cascade:
-  showDate: false
+  showDate: true
   showAuthor: false
   showSummary: true
   invertPagination: true
