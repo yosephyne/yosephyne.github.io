@@ -28,7 +28,7 @@ Milestones that have shaped my journey so far.
 
 ### Lisa Marie Josefine Eichhöfer
 
-I am a student of Social and Business Communication at the prestigious Berlin University of the Arts (UdK Berlin). My expertise lies in communication between different interest groups, with a focus on moderating conversations, representing interests, and translating across different parties.
+I am a student of Social and Business Communication at the Berlin University of the Arts (UdK Berlin). My expertise lies in communication between different interest groups, with a focus on moderating conversations, representing interests, and translating across different parties.
 
 ### Professional Profile
 I have extensive experience in **human resources**, **social media branding**, and **communication through artificial intelligence (AI)**. I am particularly passionate about how AI is transforming communication.
