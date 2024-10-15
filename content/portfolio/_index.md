@@ -10,7 +10,7 @@ cascade:
 ---
 
 {{< lead >}}
-Projects and collaborations that shape my path.
+Projects and collaborations that define my path.
 {{< /lead >}}
 
 ---
