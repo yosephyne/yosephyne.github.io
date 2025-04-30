@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verisimo - SUPER GÜNSTIGE Entscheidungen!</title>
+    <style>
+        /* --- Global Styles & Resets --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
+        }
+        @keyframes text-scroll {
+             0% { transform: translateX(100%); }
+             100% { transform: translateX(-100%); }
+         }
+
+        body {
+            font-family: 'Arial', sans-serif; background-color: #fff;
+            color: #333; line-height: 1.5;
+        }
+        h1, h2, h3 { margin-bottom: 0.6em; color: #111; font-weight: bold; }
+        h1 { font-size: 2.2em; color: #ff4500; }
+        h2 { font-size: 1.6em; } h3 { font-size: 1.2em; }
+        p { margin-bottom: 1em; }
+
+        button, input[type="submit"] {
+            cursor: pointer; padding: 12px 20px; border: none;
+            border-radius: 25px; font-weight: bold; transition: all 0.2s ease;
+            background: linear-gradient(45deg, #ff8c00, #ff4500); color: white;
+            text-transform: uppercase; font-size: 1em; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button:hover, input[type="submit"]:hover {
+            background: linear-gradient(45deg, #ff4500, #ff8c00);
+            transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        a { color: #ff6600; text-decoration: none; font-weight: bold; }
+        a:hover { color: #cc5200; text-decoration: underline; }
+        .hidden { display: none !important; }
+
+        /* --- Header Styles --- */
+        header {
+             background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+             padding: 10px 5%; display: flex; justify-content: space-between;
+             align-items: center; border-bottom: 3px solid #ff4500;
+             position: sticky; top: 0; z-index: 1000; overflow: hidden; min-height: 70px;
+         }
+         .header-ticker {
+              background-color: #ff4500; color: white; padding: 5px 0;
+              overflow: hidden; white-space: nowrap; position: absolute;
+              top: 0; left: 0; width: 100%; z-index: 1001;
+          }
+          .header-ticker span { display: inline-block; padding-left: 100%; animation: text-scroll 15s linear infinite; font-weight: bold; }
+        .logo { font-size: 2em; font-weight: 900; color: #ff4500; cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); margin-top: 25px; }
+        .search-container { display: flex; flex-grow: 0.6; max-width: 700px; margin-top: 25px; }
+        .search-container input[type="search"] { flex-grow: 1; padding: 12px 15px; border: 2px solid #ff8c00; border-right: none; border-radius: 25px 0 0 25px; font-size: 1em; }
+        .search-container button { border-radius: 0 25px 25px 0; padding: 12px 15px; font-size: 1.2em; }
+        .header-nav { margin-top: 25px; }
+        .header-nav a { margin-left: 15px; font-size: 1em; color: #333; font-weight: bold; padding: 5px 10px; background-color: rgba(255,255,255,0.5); border-radius: 15px; cursor: pointer; } /* Cursor hinzugefügt */
+        .header-nav a:hover { color: #ff4500; background-color: #fff; text-decoration: none; }
+
+        /* --- Main Content Area --- */
+        main { padding: 20px 5%; min-height: 60vh; background-color: #f0f0f0; }
+        .page-section { background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
+
+        /* --- Page: Shop --- */
+        .promo-banner-top {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; padding: 25px;
+            margin-bottom: 30px; border-radius: 10px; text-align: center; border: 3px dashed #fff;
+            box-shadow: 0 0 15px rgba(255, 154, 158, 0.7);
+        }
+        .promo-banner-top h2 { color: #fff; font-size: 2em; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); margin-bottom: 0.3em;}
+        .promo-banner-top p { font-size: 1.2em; font-weight: bold; }
+        .promo-banner-top .cta-button { background: #fff; color: #ff4500; margin-top: 15px; padding: 15px 30px; font-size: 1.1em; animation: pulse 1.5s infinite; }
+
+        .decision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; }
+        .decision-grid > .promo-block-inline { grid-column: 1 / -1; background: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 100%); color: #333; padding: 20px; border-radius: 8px; text-align: center; margin: 10px 0; font-weight: bold; }
+        .decision-grid > .promo-block-inline h3 { color: #0056b3; }
+
+        .decision-card {
+            border: 2px solid #ffcc80; border-radius: 10px; padding: 10px;
+            display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; min-height: 380px;
+        }
+        .decision-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #ff4500; }
+        .badge { position: absolute; top: 10px; left: -30px; background-color: #ff4500; color: white; padding: 5px 40px; font-size: 0.8em; font-weight: bold; transform: rotate(-45deg); transform-origin: top left; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 1; }
+        .badge.hot { background-color: #dc3545; } .badge.new { background-color: #28a745; }
+
+        .decision-card .img-placeholder { height: 130px; background-color: #eee; margin-bottom: 10px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 2.5em; color: #ccc; text-align: center; border: 1px dashed #ddd; }
+        .decision-card[data-category="karriere"] .img-placeholder::before { content: '🎓'; }
+        .decision-card[data-category="beziehung"] .img-placeholder::before { content: '💖'; }
+        .decision-card[data-category="wohnen"] .img-placeholder::before { content: '🏡'; }
+        .decision-card[data-category="mini"] .img-placeholder::before { content: '✨'; }
+        .decision-card[data-category="allgemein"] .img-placeholder::before { content: '🎲'; }
+
+        .decision-card .card-content { flex-grow: 1; display: flex; flex-direction: column; }
+        .decision-card h3 { font-size: 1.15em; margin-bottom: 8px; color: #333; }
+        .decision-card .price {
+            font-size: 1.4em; font-weight: 900; color: #ff4500;
+            margin-bottom: 12px; animation: pulse 2s infinite ease-in-out;
+            margin-top: auto;
+            /* NEU: Padding für mehr Innenabstand */
+            padding: 5px 8px;
+            display: inline-block; /* Damit Padding wirkt und Puls-Schatten Platz hat */
+            width: fit-content; /* Passt Breite an Inhalt an */
+            margin-left: auto; /* Optional: Preis rechtsbündig, wenn gewünscht */
+            margin-right: auto; /* Optional: Preis zentriert, wenn gewünscht */
+        }
+        .decision-card .promo-text { font-size: 0.85em; color: #28a745; font-weight: bold; margin-bottom: 10px; text-align: center; }
+        .decision-card .promo-text::before { content: '🔥 '; }
+
+        .decision-card button {
+            width: 100%; padding: 10px 5px; font-size: 1em; margin-top: 10px;
+            min-height: 3.5em; display: inline-flex; align-items: center;
+            justify-content: center; text-align: center; line-height: 1.2;
+        }
+
+        /* --- Page: Quiz --- */
+        #page-quiz { background: linear-gradient(to bottom, #e0f2f7, #b3e5fc); }
+        #page-quiz h2 { color: #01579b; text-align: center; font-size: 1.8em; }
+        #quiz-form .quiz-question { background-color: rgba(255,255,255,0.8); border: 2px solid #81d4fa; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        #quiz-form .question-text { font-weight: bold; margin-bottom: 15px; font-size: 1.1em; color: #01579b; }
+        #quiz-form label { display: block; margin-bottom: 10px; cursor: pointer; font-size: 1em; }
+        #quiz-form input[type="radio"] { margin-right: 10px; cursor: pointer; transform: scale(1.2); }
+        #quiz-form input[type="submit"] {
+            display: block; width: 100%; max-width: 350px; margin: 30px auto 0 auto;
+            padding: 15px 10px; /* Etwas mehr vertikales Padding */
+            font-size: 1.1em; /* Leicht reduzierte Schriftgröße, falls nötig */
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            /* NEU: Höhe und Zeilenhöhe angepasst für besseren Textfluss */
+            min-height: 4em; /* Mehr Mindesthöhe */
+            line-height: 1.3; /* Besserer Zeilenabstand bei Umbruch */
+            text-align: center;
+             white-space: normal; /* Erlaubt Umbruch explizit */
+        }
+        #quiz-form input[type="submit"]:hover { background: linear-gradient(45deg, #8bc34a, #4caf50); }
+
+        /* --- Page: Pending --- */
+        #page-pending { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #fff59d, #ffee58); }
+        #page-pending h2 { color: #f57f17; font-size: 2em; margin-bottom: 0.5em; text-shadow: 1px 1px #fff; }
+        #page-pending p { font-size: 1.3em; color: #555; }
+        #page-pending .spinner { margin: 30px auto; width: 60px; height: 60px; border: 6px solid #f3f3f3; border-top: 6px solid #ff6600; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #page-pending button { background: linear-gradient(45deg, #ff8c00, #ff4500); margin-top: 20px; }
+
+        /* --- Page: About --- */
+        #page-about { max-width: 800px; margin-left: auto; margin-right: auto; background-color: #f8f9fa; border-left: 5px solid #ff6600; padding: 30px; }
+        #page-about h1 { text-align: left; color: #ff6600; margin-bottom: 1.5em; }
+        #page-about strong { color: #333; }
+
+        /* --- Page: AGB --- */
+        #page-agb { max-width: 800px; margin-left: auto; margin-right: auto; background-color: #fff; border-left: 5px solid #007bff; padding: 30px; }
+        #page-agb h1 { text-align: left; color: #007bff; margin-bottom: 1.5em; }
+        #page-agb h2 { font-size: 1.3em; color: #495057; margin-top: 1.5em; }
+        #page-agb p { font-size: 0.95em; color: #6c757d; }
+
+        /* --- NEU: Page: Special Offer --- */
+        #page-special-offer {
+            background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); /* Lila/Orange Verlauf */
+            color: #fff;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        #page-special-offer h1 {
+            color: #fff;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 1em;
+        }
+         #page-special-offer h2 {
+             color: #fff;
+             font-size: 1.8em;
+             margin-top: 1.5em;
+             margin-bottom: 0.5em;
+             border-top: 2px dashed rgba(255,255,255,0.5);
+             padding-top: 1em;
+         }
+        #page-special-offer p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1.5em;
+            color: #f8f9fa; /* Sehr helles Grau */
+        }
+         #page-special-offer .offer-code {
+             background-color: rgba(0,0,0,0.2);
+             padding: 15px 25px;
+             border-radius: 10px;
+             display: inline-block;
+             margin-top: 10px;
+             border: 2px solid #fff;
+         }
+          #page-special-offer .offer-code strong {
+             font-size: 1.5em;
+             color: #ffeb3b; /* Gelb */
+         }
+          #page-special-offer button {
+              margin-top: 20px;
+              background: #fff;
+              color: #8a2be2; /* Lila */
+              padding: 15px 30px;
+              font-size: 1.1em;
+          }
+
+
+        /* --- Footer Styles --- */
+        footer { background-color: #212529; color: #adb5bd; padding: 30px 5%; margin-top: 40px; text-align: center; }
+        .footer-links { margin-bottom: 15px; }
+        .footer-links a { color: #ced4da; margin: 0 15px; font-weight: normal; cursor: pointer; }
+        .footer-links a:hover { color: #fff; }
+        .copyright { font-size: 0.9em; color: #6c757d; margin-top: 15px; padding-top: 15px; border-top: 1px solid #495057; }
+
+        /* --- Flashy Pop-Up Styles --- */
+        .popup { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 500px; background: linear-gradient(135deg, #ff9a9e 10%, #fecfef 90%); color: #333; padding: 30px 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 2000; text-align: center; border: 5px dashed white; animation: popup-appear 0.5s ease-out; }
+        @keyframes popup-appear { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        .popup h2 { color: #fff; font-size: 2em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .popup p { font-size: 1.1em; margin-bottom: 25px; color: #444; }
+        .popup .popup-close { position: absolute; top: 10px; right: 15px; background: rgba(255, 255, 255, 0.8); color: #ff4500; border: 2px solid #ff4500; border-radius: 50%; width: 35px; height: 35px; font-size: 1.2em; line-height: 31px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s ease; }
+        .popup .popup-close:hover { background: #ff4500; color: white; transform: rotate(90deg); }
+         /* Pop-Up Button spezifisches Styling, falls nötig */
+         #popup-deal-button { background: linear-gradient(45deg, #5bc0de, #0275d8); animation: pulse 1s infinite; }
+
+
+        /* --- Responsive Anpassungen --- */
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 10px 5%; padding-top: 40px; min-height: 150px; }
+            .search-container { width: 100%; margin: 10px 0; flex-grow: 1; max-width: none; margin-top: 10px;}
+            .header-nav { margin-top: 10px; width: 100%; text-align: center; } .header-nav a { margin: 5px; }
+            .logo { margin-bottom: 10px; margin-top: 10px; }
+            .decision-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+            .decision-card { min-height: 360px; }
+            .page-section { padding: 15px; } .popup { width: 90%; padding: 20px; }
+            .popup h2 { font-size: 1.6em; } .popup p { font-size: 1em; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8em; } h2 { font-size: 1.4em; }
+            .decision-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .decision-card { padding: 8px; min-height: 340px; }
+            .decision-card h3 { font-size: 1em; } .decision-card .price { font-size: 1.2em; padding: 3px 5px; }
+            .badge { font-size: 0.7em; padding: 3px 25px; left: -20px; }
+            .logo { font-size: 1.6em; }
+            button, input[type="submit"] { padding: 10px 15px; font-size: 0.9em; }
+            .decision-card button { min-height: 3.2em; }
+            #quiz-form input[type="submit"] { min-height: 3.8em; font-size: 1em; padding: 12px 8px; } /* Nochmals angepasst für kleine Screens */
+            .popup { padding: 15px 20px; } .popup h2 { font-size: 1.4em; }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Laufschrift -->
+     <div class="header-ticker"><span>+++ SUPER SALE! Entscheidungen SO GÜNSTIG WIE NIE! +++ Nur für kurze Zeit! +++ Greif jetzt zu! +++</span></div>
+
+    <header>
+        <span class="logo" id="logo-link">✨Verisimo✨</span>
+        <div class="search-container"><input type="search" placeholder="Deine nächste Billig-Entscheidung suchen..."><button id="search-button">🚀</button></div>
+        <nav class="header-nav"><a id="about-link-header">❓ Über uns</a><a id="shop-link-header">🛒 Shop</a></nav>
+    </header>
+
+    <main>
+        <!-- PAGE 1: SHOP / HOME -->
+        <section id="page-shop" class="page-section">
+            <div class="promo-banner-top">
+                <h2>💰 Entscheidung des TAGES! 💰</h2>
+                <p>Nur HEUTE: "Soll ich kündigen?" für unschlagbare 0,79€! Trau dich!</p>
+                <!-- NEU: ID für Button -->
+                <button class="cta-button" id="banner-deal-button">Zum Blitz-Angebot!</button>
+            </div>
+            <div class="decision-grid">
+                 <!-- Karten wie zuvor, nur mit Anpassungen im CSS für Layout -->
+                 <div class="decision-card" data-category="karriere" data-decision-id="studium-was" data-decision-title="Was soll ich studieren?"><div class="badge hot">HEISS!</div><div class="img-placeholder"></div><div class="card-content"><h3>Was soll ich studieren? 🎓</h3><p class="promo-text">TOP Wahl 2024!</p><p class="price">Nur 1,29 €</p></div><button class="buy-decision-button">Sofort entscheiden!</button></div>
+                 <div class="decision-card" data-category="karriere" data-decision-id="studium-wi-ku" data-decision-title="Wirtschaft oder Kunst?"><div class="img-placeholder"></div><div class="card-content"><h3>Wirtschaft oder Kunst? 💼🎨</h3><p class="promo-text">Über 500x gewählt!</p><p class="price">Nur 0,99 €</p></div><button class="buy-decision-button">Zuschlagen!</button></div>
+                 <div class="decision-card" data-category="karriere" data-decision-id="studium-jo-bwl" data-decision-title="Journalismus oder BWL?"><div class="badge new">NEU!</div><div class="img-placeholder"></div><div class="card-content"><h3>Journalismus oder BWL? 📰📈</h3><p class="price">Nur 0,99 €</p></div><button class="buy-decision-button">Jetzt wählen!</button></div>
+                 <div class="decision-card" data-category="karriere" data-decision-id="studium-ma-rei" data-decision-title="Master oder reisen?"><div class="img-placeholder"></div><div class="card-content"><h3>Master oder reisen? 🎓✈️</h3><p class="promo-text">Abenteuer ruft!</p><p class="price">Nur 1,49 €</p></div><button class="buy-decision-button">Los geht's!</button></div>
+                 <div class="promo-block-inline"><h3>🎁 Sonderaktion! 🎁</h3><p>Jede 5. Entscheidung quasi geschenkt! (Bedingungen gelten)</p></div>
+                 <div class="decision-card" data-category="beziehung" data-decision-id="bez-schluss" data-decision-title="Soll ich Schluss machen?"><div class="badge hot">BELIEBT!</div><div class="img-placeholder"></div><div class="card-content"><h3>Soll ich Schluss machen? 💔</h3><p class="price">Nur 1,49 €</p></div><button class="buy-decision-button">Klarheit JETZT!</button></div>
+                 <div class="decision-card" data-category="beziehung" data-decision-id="bez-trenn-jn" data-decision-title="Trennung ja oder nein?"><div class="img-placeholder"></div><div class="card-content"><h3>Trennung ja oder nein? 🤔</h3><p class="promo-text">Mut zur Veränderung!</p><p class="price">Nur 1,39 €</p></div><button class="buy-decision-button">Entscheiden!</button></div>
+                 <div class="decision-card" data-category="beziehung" data-decision-id="bez-poly" data-decision-title="Polyamorie ausprobieren?"><div class="badge new">TREND!</div><div class="img-placeholder"></div><div class="card-content"><h3>Polyamorie ausprobieren? ❤️‍🔥</h3><p class="price">Nur 1,19 €</p></div><button class="buy-decision-button">Ausprobieren!</button></div>
+                 <div class="decision-card" data-category="beziehung" data-decision-id="bez-ex" data-decision-title="Zurück zur Ex?"><div class="img-placeholder"></div><div class="card-content"><h3>Zurück zur Ex? ⏪</h3><p class="promo-text">Riskier's nochmal!</p><p class="price">Nur 1,59 €</p></div><button class="buy-decision-button">Wagen!</button></div>
+                 <div class="decision-card" data-category="wohnen" data-decision-id="wohn-stadt" data-decision-title="In welche Stadt soll ich ziehen?"><div class="badge hot">TOP!</div><div class="img-placeholder"></div><div class="card-content"><h3>Stadt ziehen? 🏙️</h3><p class="price">1,99 €</p></div><button class="buy-decision-button">Finden!</button></div>
+                 <div class="decision-card" data-category="wohnen" data-decision-id="wohn-gr-do" data-decision-title="Großstadt oder Dorf?"><div class="img-placeholder"></div><div class="card-content"><h3>Stadt/Dorf? 🌳</h3><p class="price">1,79 €</p></div><button class="buy-decision-button">Wählen!</button></div>
+                 <div class="decision-card" data-category="wohnen" data-decision-id="wohn-wg-tiny" data-decision-title="WG oder Tiny House?"><div class="img-placeholder"></div><div class="card-content"><h3>WG/Tiny? 🛋️</h3><p class="price">1,69 €</p></div><button class="buy-decision-button">Checken!</button></div>
+                 <div class="decision-card" data-category="wohnen" data-decision-id="wohn-umzug-ausl" data-decision-title="Umzug in anderes Land?"><div class="badge new">EXOTISCH</div><div class="img-placeholder"></div><div class="card-content"><h3>Ausland? 🌍</h3><p class="price">1,89 €</p></div><button class="buy-decision-button">GO!</button></div>
+                 <div class="decision-card" data-category="mini" data-decision-id="mini-jog-ser" data-decision-title="Joggen oder Serie schauen?"><div class="img-placeholder"></div><div class="card-content"><h3>Joggen/Serie? 🏃‍♀️📺</h3><p class="price">0,50 €</p></div><button class="buy-decision-button">Klick!</button></div>
+                 <div class="decision-card" data-category="mini" data-decision-id="mini-gemuese" data-decision-title="Heute Gemüse kaufen?"><div class="badge hot">GESUND!</div><div class="img-placeholder"></div><div class="card-content"><h3>Gemüse? 🥦</h3><p class="price">0,50 €</p></div><button class="buy-decision-button">Ja/Nein</button></div>
+                 <div class="decision-card" data-category="mini" data-decision-id="mini-zimmer" data-decision-title="Zimmer umräumen?"><div class="img-placeholder"></div><div class="card-content"><h3>Umräumen? 🛋️</h3><p class="price">0,79 €</p></div><button class="buy-decision-button">Machen!</button></div>
+                 <div class="decision-card" data-category="mini" data-decision-id="mini-anruf-text" data-decision-title="Anrufen oder Texten?"><div class="img-placeholder"></div><div class="card-content"><h3>Call/Text? 📞💬</h3><p class="price">0,69 €</p></div><button class="buy-decision-button">GO!</button></div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: QUIZ -->
+        <section id="page-quiz" class="page-section hidden">
+            <h2 id="quiz-title">🚀 DEINE ENTSCHEIDUNG BRAUCHT DIESE INFOS: ...</h2>
+            <form id="quiz-form">
+                <div id="quiz-questions-container"></div>
+                <!-- Button mit angepasstem CSS für Textumbruch -->
+                <input type="submit" value="💥 ABSCHICKEN & SCHICKSAL EMPFANGEN! 💥">
+            </form>
+        </section>
+
+        <!-- PAGE 3: PENDING / WAITING -->
+        <section id="page-pending" class="page-section hidden">
+            <div class="spinner"></div>
+            <h2>✨ WOW! Deine Entscheidung wird gemixt! ✨</h2>
+            <p>Nur noch Millisekunden! Das kosmische Orakel arbeitet auf Hochtouren FÜR DICH!</p>
+            <button id="back-to-shop-button">Mehr Entscheidungen!</button>
+        </section>
+
+        <!-- PAGE 4: ABOUT -->
+        <section id="page-about" class="page-section hidden">
+             <h1>🧐 Über Verisimo - Die Billig-Entscheidungs-Maschine</h1>
+             <p><strong>Was zum Teufel ist Verisimo?</strong><br> Stell dir vor, Temu und dein schlechtes Gewissen hätten ein Baby bekommen: Das ist Verisimo. Wir verkaufen dir die Illusion einer Entscheidung für weniger als einen Kaffee...</p>
+             <p><strong>Warum dieser Wahnsinn?</strong><br> Weil Entscheiden anstrengend ist!...</p>
+             <p><strong>Wie werde ich mein Zögern los?</strong><br> Easy: Stöber im Shop der Schicksale...</p>
+             <p><strong>Hilfe, ich hab's mir anders überlegt!</strong><br> Tja. Rückgängig machen ist wie Einhörner finden...</p>
+        </section>
+
+        <!-- PAGE 5: AGB -->
+        <section id="page-agb" class="page-section hidden">
+             <h1>📜 Allgemeine Geschäftsbedingungen (zum Schmunzeln) 📜</h1>
+             <h2>§1 Geltungsbereich</h2> <p>Diese AGB gelten für alle Käufe...</p>
+             <h2>§2 Vertragsgegenstand</h2> <p>Vertragsgegenstand ist der Erwerb...</p>
+             <h2>§3 Preise & Bezahlung</h2> <p>Alle Preise sind symbolisch...</p>
+             <h2>§4 Lieferung der Entscheidung</h2> <p>Die Entscheidung wird Ihnen nach Beantwortung...</p>
+             <h2>§5 Widerrufsrecht & Rückgabe</h2> <p>Ein Widerrufsrecht besteht nicht...</p>
+             <h2>§6 Haftungsausschluss</h2> <p>Verisimo haftet für absolut nichts...</p>
+             <h2>§7 Datenschutz</h2> <p>Wir sammeln vielleicht Daten...</p>
+             <h2>§8 Schlussbestimmungen</h2> <p>Sollte eine Bestimmung dieser AGB unwirksam sein...</p>
+        </section>
+
+        <!-- NEU: PAGE 6: SPECIAL OFFER -->
+         <section id="page-special-offer" class="page-section hidden">
+            <h1>🎉 Dein Super-Sonderangebot! 🎉</h1>
+            <p>Du hast es gefunden! Hier sind die Deals, die dein Zögern endgültig beenden:</p>
+
+            <h2>Deal 1: Der "3 für 2" Wahnsinn!</h2>
+            <p>Klicke jetzt drei Entscheidungen an, aber zahle (symbolisch) nur für zwei! Nutze den Code beim (nicht vorhandenen) Checkout:</p>
+            <div class="offer-code">Code: <strong>GLÜCK50</strong></div>
+
+             <h2>Deal 2: Die Entscheidung des Tages!</h2>
+             <p>Heute im Angebot für unschlagbare 0,79€: <strong>"Soll ich kündigen?"</strong>. Ergreife die Chance (oder lass es bleiben, ist ja nur ein Spiel)!</p>
+             <button id="goto-kuendigen-button">Direkt zur Kündigungs-Entscheidung!</button> <!-- Button führt noch nirgendwo hin -->
+
+            <p style="margin-top: 3em; font-size: 0.9em; color: rgba(255,255,255,0.7);">(Angebote gelten nur solange der Vorrat an Zufallszahlen reicht und nur in dieser Demo.)</p>
+             <button id="back-to-shop-from-offer-button">Zurück zum Shop</button>
+         </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a id="about-link-footer">❓ Über uns</a>
+            <a id="shop-link-footer">🛒 Shop</a>
+            <a id="agb-link-footer">📜 AGB (lustig)</a>
+            <a href="#">Datenschutz (vielleicht)</a>
+        </div>
+        <div class="copyright">&copy; 2024 Verisimo - Wo Entscheidungen billiger sind als dein Bedauern...</div>
+    </footer>
+
+    <!-- Das Pop-Up -->
+     <div id="flash-popup" class="popup hidden">
+         <span class="popup-close" id="popup-close-button">&times;</span>
+         <h2>🚨 MEGA DEAL ALARM! 🚨</h2>
+         <p>Nur für DICH! Hol dir jetzt 3 Entscheidungen zum Preis von 2! CODE: <strong style="color: #d9534f; background: yellow; padding: 2px 5px;">GLÜCK50</strong></p>
+         <!-- NEU: ID für Button -->
+         <button id="popup-deal-button">Zum MEGA-DEAL!</button>
+     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Elemente auswählen ---
+            const pages = document.querySelectorAll('.page-section');
+            const logoLink = document.getElementById('logo-link');
+            const shopLinkHeader = document.getElementById('shop-link-header');
+            const shopLinkFooter = document.getElementById('shop-link-footer');
+            const aboutLinkHeader = document.getElementById('about-link-header');
+            const aboutLinkFooter = document.getElementById('about-link-footer');
+            const agbLinkFooter = document.getElementById('agb-link-footer');
+            const searchButton = document.getElementById('search-button');
+            const decisionCards = document.querySelectorAll('.decision-card');
+            const quizForm = document.getElementById('quiz-form');
+            const quizTitleEl = document.getElementById('quiz-title');
+            const quizQuestionsContainer = document.getElementById('quiz-questions-container');
+            const backToShopButton = document.getElementById('back-to-shop-button');
+            const flashPopup = document.getElementById('flash-popup');
+            const popupCloseButton = document.getElementById('popup-close-button');
+            // NEU: Deal Buttons und Offer-Page Back Button
+            const bannerDealButton = document.getElementById('banner-deal-button');
+            const popupDealButton = document.getElementById('popup-deal-button');
+            const backToShopFromOfferButton = document.getElementById('back-to-shop-from-offer-button');
+             const gotoKuendigenButton = document.getElementById('goto-kuendigen-button'); // Optional
+
+
+            // --- Pool an absurden Fragen ---
+            const questionPool = [
+                 { id: "q1", question: "Socken in Sandalen: Fashion-Statement oder Verbrechen?", options: ["Absolutes No-Go!", "Nur IRONISCH erlaubt", "Mega bequem!", "Kommt auf die Socke an"] },
+                 { id: "q2", question: "Superkraft nur Freitags? Was wählst du?", options: ["Gedankenlesen (nur bei Pflanzen)", "Fliegen (max. auf Tischhöhe)", "Perfektes Kaffeekochen", "Sofort einschlafen können"] },
+                 { id: "q3", question: "Ananas auf Pizza?", options: ["JA! GEIL!", "Nein! Bäh!", "Nur gegrillt", "Ist mir WURST"] },
+                 { id: "q4", question: "Wenn dein Kühlschrank sprechen könnte:", options: ["'Schon wieder DU?'", "'Mehr Gemüse, bitte!'", "'Ich bin LEER!'", "'Mach die Tür zu!'"] },
+                 { id: "q5", question: "Bestes Geräusch der Welt?", options: ["Regen aufs Fenster", "Katze schnurrt", "Korken knallt", "Stille (wenn die Kinder schlafen)"] },
+                 { id: "q6", question: "Eichhörnchen: Süß oder nervig?", options: ["ULTRA SÜSS!", "Nuss-Diebe!", "Unterschätzt!", "Seh ich nie"] },
+                 { id: "q7", question: "Ideale Nickerchen-Zeit?", options: ["Immer", "Nachmittags 14:30", "Wenn der Chef redet", "Bin kein Baby mehr"] },
+                 { id: "q8", question: "Farbe der Prokrastination?", options: ["Grau-Braun-Matsch", "Neon-Pink (Alarm!)", "Unsichtbar", "Regenbogenfarben"] },
+                 { id: "q9", question: "Schlittschuhlaufen - Erfahrung?", options: ["Profi!", "Mehr gelegen als gelaufen", "Zu kalt!", "Nur zugeschaut"] },
+                 { id: "q10", question: "Hunde?", options: ["Liebe!", "Okay", "Katzen > Hunde", "Respekt, aber Abstand"] },
+                 { id: "q11", question: "Lieblingsnudelform?", options: ["Spaghetti 4-ever", "Spiralen!", "Muscheln", "Mir egal, Hauptsache Soße"] },
+                 { id: "q12", question: "Roboter-Tränen?", options: ["Öl-Leck", "Gefühls-Update", "Nein, Logik pur", "Fragt ChatGPT"] }
+            ];
+
+             // --- State & History Management ---
+             // NEU: page-special-offer hinzugefügt
+             const pageIds = ['page-shop', 'page-quiz', 'page-pending', 'page-about', 'page-agb', 'page-special-offer'];
+
+            function showPageContent(pageIdToShow) { /* ... wie zuvor ... */
+                pages.forEach(page => {
+                    page.classList.toggle('hidden', page.id !== pageIdToShow);
+                });
+                window.scrollTo(0, 0);
+            }
+            function navigateTo(pageId) { /* ... wie zuvor ... */
+                 if (!pageIds.includes(pageId)) {
+                     console.error("Ungültige Seite für Navigation:", pageId);
+                     pageId = 'page-shop';
+                 }
+                 if (`#${pageId}` !== location.hash) {
+                      history.pushState({ page: pageId }, '', `#${pageId}`);
+                 }
+                 showPageContent(pageId);
+            }
+             window.addEventListener('popstate', (event) => { /* ... wie zuvor ... */
+                 let targetPageId = 'page-shop';
+                 if (event.state && event.state.page && pageIds.includes(event.state.page)) {
+                      targetPageId = event.state.page;
+                  } else {
+                      const hash = location.hash.substring(1);
+                      if (pageIds.includes(hash)) {
+                          targetPageId = hash;
+                      }
+                  }
+                 showPageContent(targetPageId);
+             });
+
+            // --- Hilfsfunktionen (Quiz, PopUp) ---
+            function getRandomElements(arr, num) { /* ... wie zuvor ... */
+                const shuffled = [...arr].sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, num);
+             }
+            function generateQuiz(decisionId, decisionTitle) { /* ... wie zuvor ... */
+                 quizTitleEl.textContent = `🚀 DEINE ENTSCHEIDUNG BRAUCHT DIESE INFOS: "${decisionTitle}"`;
+                 quizQuestionsContainer.innerHTML = '';
+                 const selectedQuestions = getRandomElements(questionPool, 5);
+                 selectedQuestions.forEach((q, index) => {
+                     const questionDiv = document.createElement('div'); questionDiv.classList.add('quiz-question');
+                     const questionText = document.createElement('p'); questionText.classList.add('question-text'); questionText.textContent = `${index + 1}. ${q.question}`; questionDiv.appendChild(questionText);
+                     q.options.forEach((option) => {
+                         const label = document.createElement('label'); const radio = document.createElement('input'); radio.type = 'radio'; radio.name = `question_${q.id}`; radio.value = option; radio.required = true; label.appendChild(radio); label.appendChild(document.createTextNode(` ${option}`)); questionDiv.appendChild(label);
+                     });
+                     quizQuestionsContainer.appendChild(questionDiv);
+                 });
+            }
+            function showPopup() { if (flashPopup) flashPopup.classList.remove('hidden'); }
+            function hidePopup() { if (flashPopup) flashPopup.classList.add('hidden'); }
+
+
+            // --- Event Listeners ---
+
+            // Navigation über Links/Logo
+            logoLink?.addEventListener('click', () => navigateTo('page-shop'));
+            shopLinkHeader?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-shop'); });
+            shopLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-shop'); });
+            aboutLinkHeader?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-about'); });
+            aboutLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-about'); });
+            agbLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-agb'); });
+            backToShopButton?.addEventListener('click', () => navigateTo('page-shop'));
+             // NEU: Back-Button von Special Offer Seite
+             backToShopFromOfferButton?.addEventListener('click', () => navigateTo('page-shop'));
+
+
+            // Suche (Platzhalter)
+            searchButton?.addEventListener('click', () => { alert("Suche ist in dieser Demo NOCH nicht implementiert :)"); });
+
+            // Klick auf Entscheidungskarte -> Quiz starten
+            decisionCards.forEach(card => { /* ... wie zuvor ... */
+                 card.addEventListener('click', (event) => {
+                     if (event.target.closest('.buy-decision-button')) { event.stopPropagation(); }
+                     const decisionId = card.dataset.decisionId; const decisionTitle = card.dataset.decisionTitle;
+                     if (decisionId && decisionTitle) { generateQuiz(decisionId, decisionTitle); navigateTo('page-quiz'); }
+                     else { console.error("Karte ohne data-Attribute:", card); }
+                 });
+                 const button = card.querySelector('.buy-decision-button');
+                 if (button) {
+                     button.addEventListener('click', (event) => {
+                         event.preventDefault(); const decisionId = card.dataset.decisionId; const decisionTitle = card.dataset.decisionTitle;
+                         if (decisionId && decisionTitle) { generateQuiz(decisionId, decisionTitle); navigateTo('page-quiz'); }
+                     });
+                 }
+            });
+
+            // Quiz abschicken -> Pending-Seite anzeigen
+            quizForm?.addEventListener('submit', (event) => { event.preventDefault(); navigateTo('page-pending'); });
+
+            // Pop-Up Event Listener
+            if (popupCloseButton) popupCloseButton.addEventListener('click', hidePopup);
+            if (flashPopup) flashPopup.addEventListener('click', (event) => { if (event.target === flashPopup) hidePopup(); });
+
+            // NEU: Event Listener für Deal Buttons
+            bannerDealButton?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-special-offer'); });
+            popupDealButton?.addEventListener('click', (e) => {
+                e.preventDefault();
+                hidePopup(); // Pop-Up schließen beim Klick auf den Deal-Button
+                navigateTo('page-special-offer');
+            });
+             // Optional: Klick auf den Button "Direkt zur Kündigungs-Entscheidung!"
+             gotoKuendigenButton?.addEventListener('click', (e) => {
+                 e.preventDefault();
+                 // Finde die Karte mit der passenden ID (hier Annahme: existiert nicht, aber Logik wäre so)
+                 const kündigenCard = document.querySelector('.decision-card[data-decision-id="kuendigen"]'); // ID muss evtl. angepasst werden
+                 if (kündigenCard) {
+                    const decisionId = kündigenCard.dataset.decisionId;
+                    const decisionTitle = kündigenCard.dataset.decisionTitle;
+                    generateQuiz(decisionId, decisionTitle);
+                    navigateTo('page-quiz');
+                 } else {
+                     alert("Entscheidung 'Kündigen' nicht direkt verlinkt in dieser Demo.");
+                     navigateTo('page-shop'); // Fallback zum Shop
+                 }
+             });
+
+
+            // --- Initialisierung ---
+            const initialHash = location.hash.substring(1);
+            const initialPage = pageIds.includes(initialHash) ? initialHash : 'page-shop';
+            history.replaceState({ page: initialPage }, '', `#${initialPage}`);
+            showPageContent(initialPage);
+            setTimeout(showPopup, 3000);
+
+        });
+    </script>
+
+</body>
+</html>
