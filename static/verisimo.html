@@ -59,7 +59,7 @@
         .search-container input[type="search"] { flex-grow: 1; padding: 12px 15px; border: 2px solid #ff8c00; border-right: none; border-radius: 25px 0 0 25px; font-size: 1em; }
         .search-container button { border-radius: 0 25px 25px 0; padding: 12px 15px; font-size: 1.2em; }
         .header-nav { margin-top: 25px; }
-        .header-nav a { margin-left: 15px; font-size: 1em; color: #333; font-weight: bold; padding: 5px 10px; background-color: rgba(255,255,255,0.5); border-radius: 15px; cursor: pointer; } /* Cursor hinzugefügt */
+        .header-nav a { margin-left: 15px; font-size: 1em; color: #333; font-weight: bold; padding: 5px 10px; background-color: rgba(255,255,255,0.5); border-radius: 15px; cursor: pointer; }
         .header-nav a:hover { color: #ff4500; background-color: #fff; text-decoration: none; }
 
         /* --- Main Content Area --- */
@@ -100,14 +100,9 @@
         .decision-card h3 { font-size: 1.15em; margin-bottom: 8px; color: #333; }
         .decision-card .price {
             font-size: 1.4em; font-weight: 900; color: #ff4500;
-            margin-bottom: 12px; animation: pulse 2s infinite ease-in-out;
-            margin-top: auto;
-            /* NEU: Padding für mehr Innenabstand */
-            padding: 5px 8px;
-            display: inline-block; /* Damit Padding wirkt und Puls-Schatten Platz hat */
-            width: fit-content; /* Passt Breite an Inhalt an */
-            margin-left: auto; /* Optional: Preis rechtsbündig, wenn gewünscht */
-            margin-right: auto; /* Optional: Preis zentriert, wenn gewünscht */
+            margin-bottom: 12px; animation: pulse 2s infinite ease-in-out; margin-top: auto;
+            padding: 5px 8px; display: inline-block; width: fit-content;
+            margin-left: auto; margin-right: auto;
         }
         .decision-card .promo-text { font-size: 0.85em; color: #28a745; font-weight: bold; margin-bottom: 10px; text-align: center; }
         .decision-card .promo-text::before { content: '🔥 '; }
@@ -127,14 +122,8 @@
         #quiz-form input[type="radio"] { margin-right: 10px; cursor: pointer; transform: scale(1.2); }
         #quiz-form input[type="submit"] {
             display: block; width: 100%; max-width: 350px; margin: 30px auto 0 auto;
-            padding: 15px 10px; /* Etwas mehr vertikales Padding */
-            font-size: 1.1em; /* Leicht reduzierte Schriftgröße, falls nötig */
-            background: linear-gradient(45deg, #4caf50, #8bc34a);
-            /* NEU: Höhe und Zeilenhöhe angepasst für besseren Textfluss */
-            min-height: 4em; /* Mehr Mindesthöhe */
-            line-height: 1.3; /* Besserer Zeilenabstand bei Umbruch */
-            text-align: center;
-             white-space: normal; /* Erlaubt Umbruch explizit */
+            padding: 15px 10px; font-size: 1.1em; background: linear-gradient(45deg, #4caf50, #8bc34a);
+            min-height: 4em; line-height: 1.3; text-align: center; white-space: normal;
         }
         #quiz-form input[type="submit"]:hover { background: linear-gradient(45deg, #8bc34a, #4caf50); }
 
@@ -150,62 +139,23 @@
         #page-about { max-width: 800px; margin-left: auto; margin-right: auto; background-color: #f8f9fa; border-left: 5px solid #ff6600; padding: 30px; }
         #page-about h1 { text-align: left; color: #ff6600; margin-bottom: 1.5em; }
         #page-about strong { color: #333; }
+        /* Inhalt wird unten im HTML eingefügt */
 
         /* --- Page: AGB --- */
         #page-agb { max-width: 800px; margin-left: auto; margin-right: auto; background-color: #fff; border-left: 5px solid #007bff; padding: 30px; }
         #page-agb h1 { text-align: left; color: #007bff; margin-bottom: 1.5em; }
         #page-agb h2 { font-size: 1.3em; color: #495057; margin-top: 1.5em; }
         #page-agb p { font-size: 0.95em; color: #6c757d; }
+        /* Inhalt wird unten im HTML eingefügt */
 
-        /* --- NEU: Page: Special Offer --- */
-        #page-special-offer {
-            background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); /* Lila/Orange Verlauf */
-            color: #fff;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        #page-special-offer h1 {
-            color: #fff;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: 1em;
-        }
-         #page-special-offer h2 {
-             color: #fff;
-             font-size: 1.8em;
-             margin-top: 1.5em;
-             margin-bottom: 0.5em;
-             border-top: 2px dashed rgba(255,255,255,0.5);
-             padding-top: 1em;
-         }
-        #page-special-offer p {
-            font-size: 1.2em;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 1.5em;
-            color: #f8f9fa; /* Sehr helles Grau */
-        }
-         #page-special-offer .offer-code {
-             background-color: rgba(0,0,0,0.2);
-             padding: 15px 25px;
-             border-radius: 10px;
-             display: inline-block;
-             margin-top: 10px;
-             border: 2px solid #fff;
-         }
-          #page-special-offer .offer-code strong {
-             font-size: 1.5em;
-             color: #ffeb3b; /* Gelb */
-         }
-          #page-special-offer button {
-              margin-top: 20px;
-              background: #fff;
-              color: #8a2be2; /* Lila */
-              padding: 15px 30px;
-              font-size: 1.1em;
-          }
-
+        /* --- Page: Special Offer --- */
+        #page-special-offer { background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); color: #fff; text-align: center; padding: 40px 20px; }
+        #page-special-offer h1 { color: #fff; font-size: 2.5em; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); margin-bottom: 1em; }
+        #page-special-offer h2 { color: #fff; font-size: 1.8em; margin-top: 1.5em; margin-bottom: 0.5em; border-top: 2px dashed rgba(255,255,255,0.5); padding-top: 1em; }
+        #page-special-offer p { font-size: 1.2em; max-width: 600px; margin-left: auto; margin-right: auto; margin-bottom: 1.5em; color: #f8f9fa; }
+        #page-special-offer .offer-code { background-color: rgba(0,0,0,0.2); padding: 15px 25px; border-radius: 10px; display: inline-block; margin-top: 10px; border: 2px solid #fff; }
+        #page-special-offer .offer-code strong { font-size: 1.5em; color: #ffeb3b; }
+        #page-special-offer button { margin-top: 20px; background: #fff; color: #8a2be2; padding: 15px 30px; font-size: 1.1em; }
 
         /* --- Footer Styles --- */
         footer { background-color: #212529; color: #adb5bd; padding: 30px 5%; margin-top: 40px; text-align: center; }
@@ -221,9 +171,7 @@
         .popup p { font-size: 1.1em; margin-bottom: 25px; color: #444; }
         .popup .popup-close { position: absolute; top: 10px; right: 15px; background: rgba(255, 255, 255, 0.8); color: #ff4500; border: 2px solid #ff4500; border-radius: 50%; width: 35px; height: 35px; font-size: 1.2em; line-height: 31px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s ease; }
         .popup .popup-close:hover { background: #ff4500; color: white; transform: rotate(90deg); }
-         /* Pop-Up Button spezifisches Styling, falls nötig */
-         #popup-deal-button { background: linear-gradient(45deg, #5bc0de, #0275d8); animation: pulse 1s infinite; }
-
+        #popup-deal-button { background: linear-gradient(45deg, #5bc0de, #0275d8); animation: pulse 1s infinite; }
 
         /* --- Responsive Anpassungen --- */
         @media (max-width: 768px) {
@@ -245,7 +193,7 @@
             .logo { font-size: 1.6em; }
             button, input[type="submit"] { padding: 10px 15px; font-size: 0.9em; }
             .decision-card button { min-height: 3.2em; }
-            #quiz-form input[type="submit"] { min-height: 3.8em; font-size: 1em; padding: 12px 8px; } /* Nochmals angepasst für kleine Screens */
+            #quiz-form input[type="submit"] { min-height: 3.8em; font-size: 1em; padding: 12px 8px; }
             .popup { padding: 15px 20px; } .popup h2 { font-size: 1.4em; }
         }
 
@@ -267,11 +215,10 @@
             <div class="promo-banner-top">
                 <h2>💰 Entscheidung des TAGES! 💰</h2>
                 <p>Nur HEUTE: "Soll ich kündigen?" für unschlagbare 0,79€! Trau dich!</p>
-                <!-- NEU: ID für Button -->
                 <button class="cta-button" id="banner-deal-button">Zum Blitz-Angebot!</button>
             </div>
             <div class="decision-grid">
-                 <!-- Karten wie zuvor, nur mit Anpassungen im CSS für Layout -->
+                 <!-- Karten wie zuvor -->
                  <div class="decision-card" data-category="karriere" data-decision-id="studium-was" data-decision-title="Was soll ich studieren?"><div class="badge hot">HEISS!</div><div class="img-placeholder"></div><div class="card-content"><h3>Was soll ich studieren? 🎓</h3><p class="promo-text">TOP Wahl 2024!</p><p class="price">Nur 1,29 €</p></div><button class="buy-decision-button">Sofort entscheiden!</button></div>
                  <div class="decision-card" data-category="karriere" data-decision-id="studium-wi-ku" data-decision-title="Wirtschaft oder Kunst?"><div class="img-placeholder"></div><div class="card-content"><h3>Wirtschaft oder Kunst? 💼🎨</h3><p class="promo-text">Über 500x gewählt!</p><p class="price">Nur 0,99 €</p></div><button class="buy-decision-button">Zuschlagen!</button></div>
                  <div class="decision-card" data-category="karriere" data-decision-id="studium-jo-bwl" data-decision-title="Journalismus oder BWL?"><div class="badge new">NEU!</div><div class="img-placeholder"></div><div class="card-content"><h3>Journalismus oder BWL? 📰📈</h3><p class="price">Nur 0,99 €</p></div><button class="buy-decision-button">Jetzt wählen!</button></div>
@@ -297,7 +244,6 @@
             <h2 id="quiz-title">🚀 DEINE ENTSCHEIDUNG BRAUCHT DIESE INFOS: ...</h2>
             <form id="quiz-form">
                 <div id="quiz-questions-container"></div>
-                <!-- Button mit angepasstem CSS für Textumbruch -->
                 <input type="submit" value="💥 ABSCHICKEN & SCHICKSAL EMPFANGEN! 💥">
             </form>
         </section>
@@ -312,39 +258,63 @@
 
         <!-- PAGE 4: ABOUT -->
         <section id="page-about" class="page-section hidden">
+             <!-- *** NEUER INHALT FÜR ABOUT (aus vorletzter Version) *** -->
              <h1>🧐 Über Verisimo - Die Billig-Entscheidungs-Maschine</h1>
-             <p><strong>Was zum Teufel ist Verisimo?</strong><br> Stell dir vor, Temu und dein schlechtes Gewissen hätten ein Baby bekommen: Das ist Verisimo. Wir verkaufen dir die Illusion einer Entscheidung für weniger als einen Kaffee...</p>
-             <p><strong>Warum dieser Wahnsinn?</strong><br> Weil Entscheiden anstrengend ist!...</p>
-             <p><strong>Wie werde ich mein Zögern los?</strong><br> Easy: Stöber im Shop der Schicksale...</p>
-             <p><strong>Hilfe, ich hab's mir anders überlegt!</strong><br> Tja. Rückgängig machen ist wie Einhörner finden...</p>
+             <p><strong>Was zum Teufel ist Verisimo?</strong><br>
+             Stell dir vor, Temu und dein schlechtes Gewissen hätten ein Baby bekommen: Das ist Verisimo. Wir verkaufen dir die Illusion einer Entscheidung für weniger als einen Kaffee. Alles per Zufall, aber hey, es fühlt sich wichtig an! Die "Preise"? Dienen nur dazu, die grellen Lichter am Laufen zu halten.</p>
+
+             <p><strong>Warum dieser Wahnsinn?</strong><br>
+             Weil Entscheiden anstrengend ist! Wir leben im Zeitalter der Qual der Wahl. Verisimo ist dein Ausweg: Klick, bezahl (symbolisch), fertig. Kein Grübeln, kein Zweifeln (zumindest bis die echte Konsequenz eintritt). Wir zelebrieren das Loslassen – und den billigen Nervenkitzel.</p>
+
+             <p><strong>Wie werde ich mein Zögern los?</strong><br>
+             Easy: Stöber im Shop der Schicksale. Klick auf die Entscheidung, die dich nachts wach hält. Beantworte ein paar Fragen, die so relevant sind wie die Farbe deiner Socken gestern. Unser hochkomplexer Zufalls-Algorithmus (<code>Math.random()</code>) erledigt den Rest. Die finale Antwort? Gibt's in dieser Demo (noch) nicht, aber das Warten fühlt sich ECHT an!</p>
+
+             <p><strong>Hilfe, ich hab's mir anders überlegt!</strong><br>
+             Tja. Rückgängig machen ist wie Einhörner finden: Theoretisch möglich, praktisch... schwierig. Such den Button! (Spoiler: Gibt's nicht).</p>
+             <!-- *** ENDE NEUER INHALT FÜR ABOUT *** -->
         </section>
 
         <!-- PAGE 5: AGB -->
         <section id="page-agb" class="page-section hidden">
+             <!-- *** NEUER INHALT FÜR AGB (aus vorletzter Version) *** -->
              <h1>📜 Allgemeine Geschäftsbedingungen (zum Schmunzeln) 📜</h1>
-             <h2>§1 Geltungsbereich</h2> <p>Diese AGB gelten für alle Käufe...</p>
-             <h2>§2 Vertragsgegenstand</h2> <p>Vertragsgegenstand ist der Erwerb...</p>
-             <h2>§3 Preise & Bezahlung</h2> <p>Alle Preise sind symbolisch...</p>
-             <h2>§4 Lieferung der Entscheidung</h2> <p>Die Entscheidung wird Ihnen nach Beantwortung...</p>
-             <h2>§5 Widerrufsrecht & Rückgabe</h2> <p>Ein Widerrufsrecht besteht nicht...</p>
-             <h2>§6 Haftungsausschluss</h2> <p>Verisimo haftet für absolut nichts...</p>
-             <h2>§7 Datenschutz</h2> <p>Wir sammeln vielleicht Daten...</p>
-             <h2>§8 Schlussbestimmungen</h2> <p>Sollte eine Bestimmung dieser AGB unwirksam sein...</p>
+
+             <h2>§1 Geltungsbereich</h2>
+             <p>Diese AGB gelten für alle Käufe von Entscheidungen auf Verisimo.com, auch wenn Sie gar nichts kaufen und wir nichts verkaufen. Mit dem Betreten der Seite akzeptieren Sie alles, was hier steht, auch wenn Sie es nicht lesen.</p>
+
+             <h2>§2 Vertragsgegenstand</h2>
+             <p>Vertragsgegenstand ist der Erwerb einer digital generierten, zufälligen und absolut unverbindlichen Entscheidung zu einem Spottpreis. Wir liefern keine physischen Produkte, nur digitale Verwirrung oder Erleichterung.</p>
+
+             <h2>§3 Preise & Bezahlung</h2>
+             <p>Alle Preise sind symbolisch und dienen vermutlich nur dazu, die Stromrechnung für die blinkenden Lichter zu decken. Eine echte Bezahlung findet (derzeit) nicht statt. Sollten wir jemals Geld verlangen, geschieht dies auf eigene Gefahr des Zahlenden.</p>
+
+             <h2>§4 Lieferung der Entscheidung</h2>
+             <p>Die Entscheidung wird Ihnen nach Beantwortung einiger tiefsinniger Fragen (siehe Quiz) auf einer Folgeseite präsentiert (zumindest theoretisch). Eine Garantie für die Qualität, Richtigkeit oder Sinnhaftigkeit der Entscheidung wird ausdrücklich ausgeschlossen. Sie könnte genial sein. Sie könnte Unsinn sein. Das ist der Spaß daran.</p>
+
+             <h2>§5 Widerrufsrecht & Rückgabe</h2>
+             <p>Ein Widerrufsrecht besteht nicht. Wer sich einmal für eine Entscheidung entschieden hat (auch wenn wir sie getroffen haben), muss damit leben. Oder er klickt einfach nochmal und kauft eine neue. Rückgaben sind ausgeschlossen – wohin auch? Ins digitale Nichts?</p>
+
+             <h2>§6 Haftungsausschluss</h2>
+             <p>Verisimo haftet für absolut nichts. Nicht für schlechte Entscheidungen, nicht für gute Entscheidungen, nicht für verpasste Chancen, nicht für Rechtschreibfehler in diesen AGB. Die Nutzung der Seite erfolgt auf eigene Gefahr und eigenes Amüsement.</p>
+
+             <h2>§7 Datenschutz</h2>
+             <p>Wir sammeln vielleicht Daten. Vielleicht auch nicht. Wahrscheinlich speichern wir Ihre absurden Quiz-Antworten, um heimlich darüber zu lachen. Ihre Zahlungsdaten speichern wir nicht, weil Sie ja nicht zahlen. Siehe §3.</p>
+
+             <h2>§8 Schlussbestimmungen</h2>
+             <p>Sollte eine Bestimmung dieser AGB unwirksam sein, bleiben die übrigen Bestimmungen davon unberührt und genauso absurd. Änderungen vorbehalten. Gerichtsstand ist Bielefeld (weil es das ja bekanntlich nicht gibt).</p>
+             <!-- *** ENDE NEUER INHALT FÜR AGB *** -->
         </section>
 
-        <!-- NEU: PAGE 6: SPECIAL OFFER -->
+        <!-- PAGE 6: SPECIAL OFFER -->
          <section id="page-special-offer" class="page-section hidden">
             <h1>🎉 Dein Super-Sonderangebot! 🎉</h1>
             <p>Du hast es gefunden! Hier sind die Deals, die dein Zögern endgültig beenden:</p>
-
             <h2>Deal 1: Der "3 für 2" Wahnsinn!</h2>
             <p>Klicke jetzt drei Entscheidungen an, aber zahle (symbolisch) nur für zwei! Nutze den Code beim (nicht vorhandenen) Checkout:</p>
             <div class="offer-code">Code: <strong>GLÜCK50</strong></div>
-
              <h2>Deal 2: Die Entscheidung des Tages!</h2>
              <p>Heute im Angebot für unschlagbare 0,79€: <strong>"Soll ich kündigen?"</strong>. Ergreife die Chance (oder lass es bleiben, ist ja nur ein Spiel)!</p>
-             <button id="goto-kuendigen-button">Direkt zur Kündigungs-Entscheidung!</button> <!-- Button führt noch nirgendwo hin -->
-
+             <button id="goto-kuendigen-button">Direkt zur Kündigungs-Entscheidung!</button>
             <p style="margin-top: 3em; font-size: 0.9em; color: rgba(255,255,255,0.7);">(Angebote gelten nur solange der Vorrat an Zufallszahlen reicht und nur in dieser Demo.)</p>
              <button id="back-to-shop-from-offer-button">Zurück zum Shop</button>
          </section>
@@ -366,7 +336,6 @@
          <span class="popup-close" id="popup-close-button">&times;</span>
          <h2>🚨 MEGA DEAL ALARM! 🚨</h2>
          <p>Nur für DICH! Hol dir jetzt 3 Entscheidungen zum Preis von 2! CODE: <strong style="color: #d9534f; background: yellow; padding: 2px 5px;">GLÜCK50</strong></p>
-         <!-- NEU: ID für Button -->
          <button id="popup-deal-button">Zum MEGA-DEAL!</button>
      </div>
 
@@ -390,66 +359,39 @@
             const backToShopButton = document.getElementById('back-to-shop-button');
             const flashPopup = document.getElementById('flash-popup');
             const popupCloseButton = document.getElementById('popup-close-button');
-            // NEU: Deal Buttons und Offer-Page Back Button
             const bannerDealButton = document.getElementById('banner-deal-button');
             const popupDealButton = document.getElementById('popup-deal-button');
             const backToShopFromOfferButton = document.getElementById('back-to-shop-from-offer-button');
-             const gotoKuendigenButton = document.getElementById('goto-kuendigen-button'); // Optional
+            const gotoKuendigenButton = document.getElementById('goto-kuendigen-button');
 
 
             // --- Pool an absurden Fragen ---
-            const questionPool = [
-                 { id: "q1", question: "Socken in Sandalen: Fashion-Statement oder Verbrechen?", options: ["Absolutes No-Go!", "Nur IRONISCH erlaubt", "Mega bequem!", "Kommt auf die Socke an"] },
-                 { id: "q2", question: "Superkraft nur Freitags? Was wählst du?", options: ["Gedankenlesen (nur bei Pflanzen)", "Fliegen (max. auf Tischhöhe)", "Perfektes Kaffeekochen", "Sofort einschlafen können"] },
-                 { id: "q3", question: "Ananas auf Pizza?", options: ["JA! GEIL!", "Nein! Bäh!", "Nur gegrillt", "Ist mir WURST"] },
-                 { id: "q4", question: "Wenn dein Kühlschrank sprechen könnte:", options: ["'Schon wieder DU?'", "'Mehr Gemüse, bitte!'", "'Ich bin LEER!'", "'Mach die Tür zu!'"] },
-                 { id: "q5", question: "Bestes Geräusch der Welt?", options: ["Regen aufs Fenster", "Katze schnurrt", "Korken knallt", "Stille (wenn die Kinder schlafen)"] },
-                 { id: "q6", question: "Eichhörnchen: Süß oder nervig?", options: ["ULTRA SÜSS!", "Nuss-Diebe!", "Unterschätzt!", "Seh ich nie"] },
-                 { id: "q7", question: "Ideale Nickerchen-Zeit?", options: ["Immer", "Nachmittags 14:30", "Wenn der Chef redet", "Bin kein Baby mehr"] },
-                 { id: "q8", question: "Farbe der Prokrastination?", options: ["Grau-Braun-Matsch", "Neon-Pink (Alarm!)", "Unsichtbar", "Regenbogenfarben"] },
-                 { id: "q9", question: "Schlittschuhlaufen - Erfahrung?", options: ["Profi!", "Mehr gelegen als gelaufen", "Zu kalt!", "Nur zugeschaut"] },
-                 { id: "q10", question: "Hunde?", options: ["Liebe!", "Okay", "Katzen > Hunde", "Respekt, aber Abstand"] },
-                 { id: "q11", question: "Lieblingsnudelform?", options: ["Spaghetti 4-ever", "Spiralen!", "Muscheln", "Mir egal, Hauptsache Soße"] },
-                 { id: "q12", question: "Roboter-Tränen?", options: ["Öl-Leck", "Gefühls-Update", "Nein, Logik pur", "Fragt ChatGPT"] }
+            const questionPool = [ /* ... Fragen wie zuvor ... */
+                 { id: "q1", question: "Socken in Sandalen: Fashion-Statement oder Verbrechen?", options: ["Absolutes No-Go!", "Nur IRONISCH erlaubt", "Mega bequem!", "Kommt auf die Socke an"] }, { id: "q2", question: "Superkraft nur Freitags? Was wählst du?", options: ["Gedankenlesen (nur bei Pflanzen)", "Fliegen (max. auf Tischhöhe)", "Perfektes Kaffeekochen", "Sofort einschlafen können"] }, { id: "q3", question: "Ananas auf Pizza?", options: ["JA! GEIL!", "Nein! Bäh!", "Nur gegrillt", "Ist mir WURST"] }, { id: "q4", question: "Wenn dein Kühlschrank sprechen könnte:", options: ["'Schon wieder DU?'", "'Mehr Gemüse, bitte!'", "'Ich bin LEER!'", "'Mach die Tür zu!'"] }, { id: "q5", question: "Bestes Geräusch der Welt?", options: ["Regen aufs Fenster", "Katze schnurrt", "Korken knallt", "Stille (wenn die Kinder schlafen)"] }, { id: "q6", question: "Eichhörnchen: Süß oder nervig?", options: ["ULTRA SÜSS!", "Nuss-Diebe!", "Unterschätzt!", "Seh ich nie"] }, { id: "q7", question: "Ideale Nickerchen-Zeit?", options: ["Immer", "Nachmittags 14:30", "Wenn der Chef redet", "Bin kein Baby mehr"] }, { id: "q8", question: "Farbe der Prokrastination?", options: ["Grau-Braun-Matsch", "Neon-Pink (Alarm!)", "Unsichtbar", "Regenbogenfarben"] }, { id: "q9", question: "Schlittschuhlaufen - Erfahrung?", options: ["Profi!", "Mehr gelegen als gelaufen", "Zu kalt!", "Nur zugeschaut"] }, { id: "q10", question: "Hunde?", options: ["Liebe!", "Okay", "Katzen > Hunde", "Respekt, aber Abstand"] }, { id: "q11", question: "Lieblingsnudelform?", options: ["Spaghetti 4-ever", "Spiralen!", "Muscheln", "Mir egal, Hauptsache Soße"] }, { id: "q12", question: "Roboter-Tränen?", options: ["Öl-Leck", "Gefühls-Update", "Nein, Logik pur", "Fragt ChatGPT"] }
             ];
 
              // --- State & History Management ---
-             // NEU: page-special-offer hinzugefügt
              const pageIds = ['page-shop', 'page-quiz', 'page-pending', 'page-about', 'page-agb', 'page-special-offer'];
 
             function showPageContent(pageIdToShow) { /* ... wie zuvor ... */
-                pages.forEach(page => {
-                    page.classList.toggle('hidden', page.id !== pageIdToShow);
-                });
+                pages.forEach(page => { page.classList.toggle('hidden', page.id !== pageIdToShow); });
                 window.scrollTo(0, 0);
             }
             function navigateTo(pageId) { /* ... wie zuvor ... */
-                 if (!pageIds.includes(pageId)) {
-                     console.error("Ungültige Seite für Navigation:", pageId);
-                     pageId = 'page-shop';
-                 }
-                 if (`#${pageId}` !== location.hash) {
-                      history.pushState({ page: pageId }, '', `#${pageId}`);
-                 }
+                 if (!pageIds.includes(pageId)) { pageId = 'page-shop'; }
+                 if (`#${pageId}` !== location.hash) { history.pushState({ page: pageId }, '', `#${pageId}`); }
                  showPageContent(pageId);
             }
              window.addEventListener('popstate', (event) => { /* ... wie zuvor ... */
                  let targetPageId = 'page-shop';
-                 if (event.state && event.state.page && pageIds.includes(event.state.page)) {
-                      targetPageId = event.state.page;
-                  } else {
-                      const hash = location.hash.substring(1);
-                      if (pageIds.includes(hash)) {
-                          targetPageId = hash;
-                      }
-                  }
+                 if (event.state && event.state.page && pageIds.includes(event.state.page)) { targetPageId = event.state.page; }
+                 else { const hash = location.hash.substring(1); if (pageIds.includes(hash)) { targetPageId = hash; } }
                  showPageContent(targetPageId);
              });
 
             // --- Hilfsfunktionen (Quiz, PopUp) ---
             function getRandomElements(arr, num) { /* ... wie zuvor ... */
-                const shuffled = [...arr].sort(() => 0.5 - Math.random());
-                return shuffled.slice(0, num);
+                const shuffled = [...arr].sort(() => 0.5 - Math.random()); return shuffled.slice(0, num);
              }
             function generateQuiz(decisionId, decisionTitle) { /* ... wie zuvor ... */
                  quizTitleEl.textContent = `🚀 DEINE ENTSCHEIDUNG BRAUCHT DIESE INFOS: "${decisionTitle}"`;
@@ -460,8 +402,7 @@
                      const questionText = document.createElement('p'); questionText.classList.add('question-text'); questionText.textContent = `${index + 1}. ${q.question}`; questionDiv.appendChild(questionText);
                      q.options.forEach((option) => {
                          const label = document.createElement('label'); const radio = document.createElement('input'); radio.type = 'radio'; radio.name = `question_${q.id}`; radio.value = option; radio.required = true; label.appendChild(radio); label.appendChild(document.createTextNode(` ${option}`)); questionDiv.appendChild(label);
-                     });
-                     quizQuestionsContainer.appendChild(questionDiv);
+                     }); quizQuestionsContainer.appendChild(questionDiv);
                  });
             }
             function showPopup() { if (flashPopup) flashPopup.classList.remove('hidden'); }
@@ -469,8 +410,6 @@
 
 
             // --- Event Listeners ---
-
-            // Navigation über Links/Logo
             logoLink?.addEventListener('click', () => navigateTo('page-shop'));
             shopLinkHeader?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-shop'); });
             shopLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-shop'); });
@@ -478,14 +417,9 @@
             aboutLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-about'); });
             agbLinkFooter?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-agb'); });
             backToShopButton?.addEventListener('click', () => navigateTo('page-shop'));
-             // NEU: Back-Button von Special Offer Seite
-             backToShopFromOfferButton?.addEventListener('click', () => navigateTo('page-shop'));
-
-
-            // Suche (Platzhalter)
+            backToShopFromOfferButton?.addEventListener('click', () => navigateTo('page-shop'));
             searchButton?.addEventListener('click', () => { alert("Suche ist in dieser Demo NOCH nicht implementiert :)"); });
 
-            // Klick auf Entscheidungskarte -> Quiz starten
             decisionCards.forEach(card => { /* ... wie zuvor ... */
                  card.addEventListener('click', (event) => {
                      if (event.target.closest('.buy-decision-button')) { event.stopPropagation(); }
@@ -494,44 +428,20 @@
                      else { console.error("Karte ohne data-Attribute:", card); }
                  });
                  const button = card.querySelector('.buy-decision-button');
-                 if (button) {
-                     button.addEventListener('click', (event) => {
-                         event.preventDefault(); const decisionId = card.dataset.decisionId; const decisionTitle = card.dataset.decisionTitle;
-                         if (decisionId && decisionTitle) { generateQuiz(decisionId, decisionTitle); navigateTo('page-quiz'); }
-                     });
-                 }
+                 if (button) { button.addEventListener('click', (event) => { event.preventDefault(); const decisionId = card.dataset.decisionId; const decisionTitle = card.dataset.decisionTitle; if (decisionId && decisionTitle) { generateQuiz(decisionId, decisionTitle); navigateTo('page-quiz'); } }); }
             });
 
-            // Quiz abschicken -> Pending-Seite anzeigen
             quizForm?.addEventListener('submit', (event) => { event.preventDefault(); navigateTo('page-pending'); });
-
-            // Pop-Up Event Listener
             if (popupCloseButton) popupCloseButton.addEventListener('click', hidePopup);
             if (flashPopup) flashPopup.addEventListener('click', (event) => { if (event.target === flashPopup) hidePopup(); });
-
-            // NEU: Event Listener für Deal Buttons
             bannerDealButton?.addEventListener('click', (e) => { e.preventDefault(); navigateTo('page-special-offer'); });
-            popupDealButton?.addEventListener('click', (e) => {
-                e.preventDefault();
-                hidePopup(); // Pop-Up schließen beim Klick auf den Deal-Button
-                navigateTo('page-special-offer');
-            });
-             // Optional: Klick auf den Button "Direkt zur Kündigungs-Entscheidung!"
-             gotoKuendigenButton?.addEventListener('click', (e) => {
+            popupDealButton?.addEventListener('click', (e) => { e.preventDefault(); hidePopup(); navigateTo('page-special-offer'); });
+            gotoKuendigenButton?.addEventListener('click', (e) => { /* ... wie zuvor (Demo) ... */
                  e.preventDefault();
-                 // Finde die Karte mit der passenden ID (hier Annahme: existiert nicht, aber Logik wäre so)
-                 const kündigenCard = document.querySelector('.decision-card[data-decision-id="kuendigen"]'); // ID muss evtl. angepasst werden
-                 if (kündigenCard) {
-                    const decisionId = kündigenCard.dataset.decisionId;
-                    const decisionTitle = kündigenCard.dataset.decisionTitle;
-                    generateQuiz(decisionId, decisionTitle);
-                    navigateTo('page-quiz');
-                 } else {
-                     alert("Entscheidung 'Kündigen' nicht direkt verlinkt in dieser Demo.");
-                     navigateTo('page-shop'); // Fallback zum Shop
-                 }
+                 const kündigenCard = document.querySelector('.decision-card[data-decision-id="kuendigen"]'); // Annahme ID
+                 if (kündigenCard) { const decisionId = kündigenCard.dataset.decisionId; const decisionTitle = kündigenCard.dataset.decisionTitle; generateQuiz(decisionId, decisionTitle); navigateTo('page-quiz'); }
+                 else { alert("Entscheidung 'Kündigen' nicht direkt verlinkt in dieser Demo."); navigateTo('page-shop'); }
              });
-
 
             // --- Initialisierung ---
             const initialHash = location.hash.substring(1);
