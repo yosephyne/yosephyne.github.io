@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>badmoodgame - Spiel die Lösung!</title>
+
+    <!-- === HIER EINGEFÜGT: Supabase JS Library via CDN (mit defer) === -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+    <style>
+        /* Grundlegende Stile */
+        html {
+             scroll-behavior: smooth; /* Für sanftes Scrollen bei Menü-Klicks */
+        }
+
+        body {
+            /* Annäherung an schwarzen Pappkarton - Ideal wäre background-image */
+            background-color: #1a1a1a; /* Dunkles Grau als Basis */
+            /* Simulierter Noise für Textur - ECHTES BILD WÄRE BESSER */
+            background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 3px 3px;
+            /* --- Ende Textur-Simulation --- */
+
+            color: #e0e0e0; /* Leicht abgetöntes Weiß für Text */
+            /* Typewriter Font Stack */
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7; /* Etwas mehr Zeilenabstand für Monospace */
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px; /* Etwas schmaler für den Look */
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 25px 0 15px 0;
+            border-bottom: 1px solid #444;
+            margin-bottom: 0; /* Kein Abstand zum Menü */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8em; /* Angepasste Größe */
+            font-weight: bold; /* Fett bleibt gut lesbar */
+            letter-spacing: 1px; /* Geringeres Spacing für Typewriter */
+            text-transform: uppercase;
+            color: #fff;
+        }
+        header h1 .highlight {
+             font-weight: bolder;
+        }
+
+        /* Navigation Menu */
+        nav {
+            background-color: #111; /* Dunkler Hintergrund fürs Menü */
+            border-bottom: 1px solid #444;
+            padding: 8px 0;
+            margin-bottom: 30px;
+            text-align: center; /* Zentriert die Menüpunkte */
+            border-radius: 0 0 20px 20px; /* Runde Ecken unten */
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav li {
+            display: inline-block; /* Nebeneinander */
+            margin: 0 15px;
+        }
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 5px 10px;
+            border-radius: 15px; /* Runde Kanten für Links */
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        nav a:hover, nav a.active { /* Hover und Aktiver Link (optional) */
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* Hauptinhalt (wird nach Login angezeigt) */
+        #main-content {
+            display: none; /* Initial ausgeblendet */
+        }
+
+
+        /* Login Modal */
+        #login-modal {
+            /* display: none; Wird jetzt von JS gesteuert */
+            position: fixed; /* Bleibt beim Scrollen sichtbar */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Dunklerer Overlay */
+            z-index: 1000; /* Über allem anderen */
+            display: flex; /* Flexbox zum Zentrieren - wird initial von JS gesetzt */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background-color: #222; /* Hintergrund der Box */
+            padding: 30px 40px;
+            border-radius: 25px; /* Starke Rundung */
+            border: 1px solid #555;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+        }
+
+        .login-box h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 1.5em;
+        }
+
+        .login-box label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-size: 1em;
+            text-align: left;
+        }
+
+        .login-box input[type="text"], .login-box input[type="email"], .login-box input[type="password"] { /* Email/Passwort hinzugefügt */
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #111;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 15px; /* Runde Kanten */
+            font-family: 'Courier New', Courier, monospace; /* Schriftart auch hier */
+            font-size: 1em;
+        }
+         .login-box .mood-hint {
+            font-size: 0.85em;
+            color: #888;
+            text-align: left;
+            margin-top: -10px;
+            margin-bottom: 15px;
+         }
+
+        .login-box button {
+            padding: 12px 30px;
+            background-color: #eee;
+            color: #000;
+            border: none; /* Kein Rand für Hauptbutton */
+            border-radius: 20px; /* Runde Kanten */
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 10px; /* Etwas Abstand */
+        }
+        .login-box button:hover {
+            background-color: #fff;
+        }
+         #login-error, #auth-message { /* Auth Message hinzugefügt */
+            color: #f44336; /* Rot für Fehler */
+            margin-top: 15px;
+            font-size: 0.9em;
+            min-height: 1.2em; /* Platzhalter, damit Layout nicht springt */
+         }
+         #auth-message.success { /* Grüne Erfolgsmeldung */
+            color: #6fbf73;
+         }
+         /* Bereich für Registrierungs/Passwort-vergessen-Links */
+         .auth-switch {
+            margin-top: 20px;
+            font-size: 0.9em;
+         }
+         .auth-switch a {
+             color: #aaa;
+             text-decoration: underline;
+             cursor: pointer;
+         }
+         .auth-switch a:hover {
+             color: #fff;
+         }
+
+        /* Benutzerprofil / Avatar Bereich */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px dashed #555; /* Angepasste Farbe */
+        }
+
+        .user-profile img.avatar {
+            width: 45px; /* Etwas größer */
+            height: 45px;
+            border-radius: 50%; /* Bleibt rund */
+            border: 2px solid #666; /* Deutlicherer Rand */
+            margin-right: 12px;
+            background-color: #333; /* Dunklerer Platzhalter */
+        }
+
+        .user-profile .username {
+            margin-right: 15px;
+            font-weight: bold;
+            color: #fff; /* Hellerer Name */
+            font-size: 1.1em;
+        }
+
+        .user-profile .rank {
+            font-size: 0.95em;
+            padding: 5px 12px; /* Mehr Padding */
+            background-color: #333;
+            border: 1px solid #666;
+            border-radius: 15px; /* Runde Kanten */
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .user-profile .rank.goodmoodie { background-color: #6fbf73; color: #000; border-color: #6fbf73; } /* Angepasstes Grün */
+        .user-profile .rank.badmoodie { background-color: #e57373; color: #000; border-color: #e57373; } /* Angepasstes Rot */
+
+        /* Logout Button */
+        #logout-button {
+            background: none;
+            border: 1px solid #888;
+            color: #ccc;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-left: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #logout-button:hover {
+            background-color: #e57373;
+            border-color: #e57373;
+            color: #000;
+        }
+
+
+        /* Sektionen Styling */
+        section {
+            margin-bottom: 50px;
+            padding: 30px; /* Mehr Padding für Rundung */
+            background-color: rgba(10, 10, 10, 0.7); /* Dunkler, leicht transparent */
+            border: 1px solid #444;
+            border-radius: 25px; /* Runde Kanten */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3); /* Leichter Schatten */
+        }
+
+        section h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 35px; /* Mehr Abstand */
+            font-size: 1.6em; /* Angepasste Größe */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #eee;
+            border-bottom: 1px solid #555; /* Dunklere Linie */
+            padding-bottom: 12px;
+        }
+
+        /* Formular Elemente (Problem, Quiz Frage Einreichen) */
+        label { display: block; margin-bottom: 8px; font-weight: normal; color: #ccc; font-size: 1em; }
+        textarea, input[type="text"], input[type="email"], input[type="password"] { /* Genereller Input-Style */
+            width: calc(100% - 24px); /* Breite an Padding anpassen */
+            padding: 12px; /* Mehr Padding */
+            margin-bottom: 15px;
+            background-color: #111;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 15px; /* Runde Kanten */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+         textarea { min-height: 90px; resize: vertical; }
+
+        /* Buttons in Sektionen */
+        section button {
+            display: block;
+            width: auto;
+            margin: 20px auto 0 auto;
+            padding: 10px 25px;
+            background-color: #444; /* Dunklere Buttons */
+            color: #eee;
+            border: 1px solid #666;
+            border-radius: 20px; /* Runde Kanten */
+            font-size: 1em;
+            font-weight: bold; /* Fett für Lesbarkeit */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        section button:hover {
+            background-color: #555;
+            border-color: #888;
+            color: #fff;
+        }
+        /* Spezieller Button für Problem abschicken */
+        #submit-problem button {
+             background-color: #eee; color: #000; border: none;
+        }
+        #submit-problem button:hover {
+            background-color: #fff; color: #000;
+        }
+
+
+        /* Aktuelles Problem & Visualisierung */
+        #current-problem .problem-details h3 { text-align: center; margin-bottom: 10px; color: #fff; font-size: 1.3em; }
+        #current-problem .problem-details p { text-align: center; color: #ccc; margin-bottom: 30px; font-size: 1.1em; }
+        .visualization-placeholder {
+            min-height: 200px;
+            border: 2px dashed #555; /* Angepasste Farbe */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background-color: #111;
+            color: #888; /* Heller für Sichtbarkeit */
+            font-style: normal; /* Kein Italic mehr */
+            border-radius: 20px; /* Runde Kanten */
+            font-size: 1.1em;
+        }
+
+
+        /* Kreative Lösungen */
+        #creative-solutions .solution-list { list-style: none; padding: 0; }
+        .solution-idea {
+            background-color: rgba(30, 30, 30, 0.8); /* Dunkler, leicht transparent */
+            border: 1px solid #444;
+            padding: 20px 25px; /* Mehr Padding */
+            margin-bottom: 20px;
+            position: relative;
+            border-radius: 20px; /* Runde Kanten */
+        }
+        .solution-idea h4 { margin: 0 0 10px 0; color: #fff; font-size: 1.25em; }
+        .solution-idea .idea-prefix { font-weight: normal; color: #aaa; margin-right: 5px; }
+        .solution-idea p { margin: 8px 0 0 0; color: #bbb; font-size: 1em; }
+        .solution-idea .constraints { color: #999; font-size: 0.9em; margin-top: 10px; }
+
+        /* Quiz Zone */
+        #js-quiz-area {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #111;
+            border: 1px solid #444;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px; /* Runde Kanten */
+            text-align: center;
+        }
+         #js-quiz-area h4 { color: #fff; margin-bottom: 25px; font-size: 1.2em; }
+        .quiz-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+        .quiz-options button { /* Antwort-Buttons */
+            padding: 10px 20px; background-color: #333; color: #eee; border: 1px solid #555; border-radius: 15px; font-size: 1em; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; font-family: 'Courier New', Courier, monospace;
+        }
+        .quiz-options button:hover { background-color: #555; border-color: #777; }
+
+        #start-js-quiz { /* Quiz Start Button */
+             padding: 12px 30px; background-color: #fff; color: #000; border: none; border-radius: 20px; font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: background-color 0.2s ease; font-family: 'Courier New', Courier, monospace; margin: 0 auto 25px auto; display: block;
+        }
+         #start-js-quiz:hover { background-color: #eee; }
+
+        #quiz-result {
+            text-align: center; margin-top: 20px; padding: 15px; font-size: 1.1em; font-weight: bold; background-color: #1f1f1f; border: 1px dashed #555; min-height: 30px; color: #eee; border-radius: 15px; /* Runde Kanten */
+        }
+
+        /* Quiz Bestenliste */
+        #quiz-zone .rankings { margin-top: 45px; }
+        #quiz-zone .rankings h3 { text-align: center; color: #ddd; margin-bottom: 25px; font-size: 1.3em; }
+        .rankings ol { list-style: none; padding: 0; max-width: 500px; margin: 0 auto; }
+        .rankings li { display: flex; align-items: center; background-color: #181818; padding: 10px 20px; margin-bottom: 10px; border: 1px solid #444; border-radius: 15px; /* Runde Kanten */ font-size: 1em; }
+        .rankings li .rank-position { font-weight: bold; min-width: 30px; color: #aaa; }
+        .rankings li img.avatar-small { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #555; margin-right: 12px; margin-left: 8px; background-color: #333; }
+        .rankings li .rank-name { flex-grow: 1; color: #eee; }
+        .rankings li .rank-status { font-weight: bold; font-size: 0.9em; padding: 3px 8px; border-radius: 10px; } /* Rundung auch hier */
+        /* Farben für Status in Bestenliste */
+        .rankings li .rank-status.good { background-color: #6fbf73; color: #000; }
+        .rankings li .rank-status.bad { background-color: #e57373; color: #000; }
+        .rankings li .rank-status.neutral { background-color: #fff59d; color: #000; } /* Beispiel Gelb */
+
+
+        /* Quiz Frage einreichen */
+        #quiz-zone .submit-question-form { margin-top: 45px; padding-top: 35px; border-top: 1px dashed #555; }
+        #quiz-zone .submit-question-form h3 { text-align: center; color: #ddd; margin-bottom: 25px; font-size: 1.3em; }
+        #quiz-zone .limit-info { text-align: center; font-size: 0.9em; color: #888; margin-top: 20px; }
+
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 20px;
+            font-size: 0.95em; /* Etwas größer */
+            color: #aaa;
+            border-top: 1px solid #444;
+        }
+        footer a { color: #fff; text-decoration: underline; border-radius: 5px; } /* Minimale Rundung für Links */
+        footer a:hover { text-decoration: none; background-color: #333; color: #fff;}
+
+
+        /* Responsivität */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2em; }
+            nav li { margin: 0 8px; }
+            nav a { font-size: 1em; padding: 4px 8px;}
+            section { padding: 20px; border-radius: 20px; }
+            section h2 { font-size: 1.4em; }
+            .user-profile { justify-content: center; }
+            #start-js-quiz { font-size: 1em; padding: 10px 20px; }
+            .quiz-options button { font-size: 0.9em; padding: 8px 15px;}
+            .rankings ol { max-width: 100%; }
+            .login-box { padding: 25px 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Login Modal -->
+    <div id="login-modal" style="display: none;"> <!-- Initial versteckt, JS steuert Anzeige -->
+        <div class="login-box">
+            <!-- Inhalt wird von JS dynamisch gesetzt (Login oder Registrierung) -->
+        </div>
+    </div>
+
+    <!-- Hauptinhalt der Seite (wird nach Login sichtbar) -->
+    <div id="main-content" style="display: none;"> <!-- Initial versteckt -->
+        <header>
+            <h1>bad<span class="highlight">mood</span>game</h1>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#problems">Probleme</a></li>
+                <li><a href="#solutions">Lösungen</a></li>
+                <li><a href="#quiz">Quiz</a></li>
+            </ul>
+        </nav>
+
+        <div class="container">
+
+            <!-- Benutzer Info Bereich -->
+            <div class="user-profile">
+                <img src="placeholder-avatar.png" alt="Avatar" class="avatar" id="user-avatar"> <!-- Platzhalter -->
+                <span class="username" id="user-username">Spieler</span> <!-- Wird von JS gesetzt -->
+                <span class="rank badmoodie" id="user-rank-display">Rang: Badmoodie</span>
+                 <!-- Logout Button Hinzugefügt -->
+                <button id="logout-button" style="display: none;">Logout</button>
+            </div>
+
+            <!-- Probleme Sektion (Kombiniert Einreichen & Anzeigen) -->
+            <section id="problems">
+                <h2>Probleme & Stimmungstiefs</h2>
+
+                <!-- Problem Einreichen -->
+                <div id="submit-problem" style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px dashed #444;">
+                    <h3>Melde ein neues Stimmungstief</h3>
+                    <form id="problem-form"> <!-- ID hinzugefügt -->
+                        <label for="problem-description">Was drückt gerade auf die Stimmung?</label>
+                        <textarea id="problem-description" name="problem-description" rows="3" placeholder="Beschreibe das Problem kurz und knackig im Typewriter-Stil..." required></textarea>
+                        <button type="submit">Problem abschicken & Lösung anfordern</button>
+                        <p id="problem-submit-message" style="text-align:center; margin-top:10px; font-size:0.9em; color:#888;"></p> <!-- Für Feedback -->
+                    </form>
+                </div>
+
+                <!-- Aktuelles Top-Problem -->
+                <div id="current-problem">
+                    <h3>Aktuelles Top-Stimmungstief</h3>
+                    <div class="problem-details">
+                        <h4>Das Drucker-Dilemma</h4>
+                        <p>"Der Drucker im 3. Stock frisst ständig Papier und macht dabei seltsame Klick-Geräusche."</p>
+                    </div>
+                    <div class="visualization-placeholder">
+                        -- KI-Visualisierung des Problems hier --
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kreative Lösungen Sektion -->
+            <section id="solutions">
+                <h2>Kreative Lösungsfunken</h2>
+                <ul class="solution-list" id="solution-list-ul"> <!-- ID für JS hinzugefügt -->
+                    <!-- Platzhalter, wird von JS/DB befüllt -->
+                    <li class="solution-idea">Warte auf Lösungen aus der Datenbank...</li>
+                </ul>
+                 <button id="refresh-solutions-button">Lösungen neu laden</button> <!-- Button zum Neuladen -->
+            </section>
+
+            <!-- Quiz Zone Sektion -->
+            <section id="quiz">
+                <h2>Moodie-Quiz-Challenge</h2>
+                <button id="start-js-quiz">Schnelles Quiz starten!</button>
+                <div id="js-quiz-area">Bereit für die Herausforderung?</div>
+                <div id="quiz-result"></div>
+
+                <div class="rankings">
+                    <h3>Bestenliste</h3>
+                     <ol id="rankings-list"> <!-- ID für JS hinzugefügt -->
+                        <!-- Wird von JS/DB befüllt -->
+                        <li>Lade Bestenliste...</li>
+                     </ol>
+                     <button id="refresh-rankings-button">Bestenliste neu laden</button>
+                </div>
+
+                <div class="submit-question-form">
+                    <h3>Eigene Quizfrage einreichen (Konzept)</h3>
+                     <form action="#" method="post" onsubmit="alert('Funktion noch nicht implementiert.'); return false;">
+                        <label for="quiz-question">Deine Frage (zum Unternehmen):</label>
+                        <input type="text" id="quiz-question" name="quiz-question" placeholder="z.B. Wie viele Kaffeebohnen passen in die Mühle?" required>
+                        <label for="correct-answer">Richtige Antwort:</label>
+                        <input type="text" id="correct-answer" name="correct-answer" placeholder="z.B. 4711" required>
+                        <label for="wrong-answer1">Falsche Antwort 1:</label>
+                        <input type="text" id="wrong-answer1" name="wrong-answer1" placeholder="z.B. Alle" required>
+                         <label for="wrong-answer2">Falsche Antwort 2:</label>
+                        <input type="text" id="wrong-answer2" name="wrong-answer2" placeholder="z.B. Zu wenige" required>
+                        <button type="submit" disabled>Frage einreichen (Inaktiv)</button> <!-- Vorerst deaktiviert -->
+                     </form>
+                    <p class="limit-info">Du kannst heute noch X Fragen einreichen.</p>
+                </div>
+            </section>
+
+        </div><!-- /.container -->
+
+        <footer>
+            <p>&copy; 2023 badmoodgame by [Dein Unternehmen/Initiator]. Spiel die Lösung!</p>
+            <p><a href="#main-content">Nach Oben</a></p>
+        </footer>
+
+    </div> <!-- /#main-content -->
+
+
+    <!-- JavaScript (Login & Quiz & Supabase Integration) -->
+    <script>
+        // --- SUPABASE INITIALISIERUNG ---
+        // WICHTIG: Ersetze die folgenden Platzhalter mit DEINEN Werten aus dem Supabase Dashboard!
+        const SUPABASE_URL = "https://baifviqcjqmdtmjlseun.supabase.co"; // Finde dies unter Project Settings > API
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhaWZ2aXFjanFtZHRtamxzZXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyOTE4MTksImV4cCI6MjA2MTg2NzgxOX0.-zoFCE57MZcTynDVQlsT5K4viVRf0HBtjctNoBH64GA"; // Finde dies unter Project Settings > API (anon public key)
+
+        let supabase; // Deklariere hier, damit es im globalen Scope ist
+        try {
+            // Prüfen, ob das Supabase-Objekt vom CDN geladen wurde UND die createClient-Funktion existiert
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                // Den Client über das globale window-Objekt erstellen
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase Client initialisiert.');
+
+                // === Optionaler Test (kannst du hinzufügen, um die Verbindung zu prüfen) ===
+                // Versucht, die aktuelle Session zu holen. Wenn das klappt, ist die Verbindung ok.
+                /*
+                supabase.auth.getSession().then(({ data: { session }, error }) => {
+                    if (error) {
+                        console.warn('Supabase Verbindungstest fehlgeschlagen (Session):', error.message);
+                    } else {
+                        console.log('Supabase Verbindungstest erfolgreich. Session:', session);
+                    }
+                }).catch(err => {
+                     console.warn('Supabase Verbindungstest fehlgeschlagen (Catch):', err.message);
+                });
+                */
+                // === Ende Optionaler Test ===
+
+            } else {
+                // Fehler, wenn die Bibliothek nicht korrekt geladen wurde
+                throw new Error('Supabase Client Library (window.supabase) nicht gefunden oder createClient ist keine Funktion. Prüfe den CDN-Link im <head>.');
+            }
+
+        } catch (error) {
+            console.error('Fehler beim Initialisieren des Supabase Clients:', error);
+            // Zeige die Fehlermeldung auf der Seite an, statt nur schwarzem Bildschirm
+            document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111; border-radius: 15px; margin: 20px;">FEHLER: Verbindung zur Datenbank fehlgeschlagen. <br><br>Details: ${error.message}<br><br>Mögliche Ursachen:<ul><li>Ist die Supabase URL korrekt?</li><li>Ist der Supabase Anon Key korrekt?</li><li>Kann der Browser die Supabase URL erreichen (Netzwerk/Firewall)?</li><li>Prüfe die Browser-Konsole (F12) für weitere Details.</li></ul>Bitte Seite neu laden.</div>`;
+            // Stoppt die weitere Ausführung des Skripts, da Supabase nicht verfügbar ist
+            throw error;
+        }
+
+
+        // --- DOM ELEMENT REFERENZEN ---
+        const loginModal = document.getElementById('login-modal');
+        const loginBox = loginModal.querySelector('.login-box'); // Container für Login/Register Inhalt
+        const mainContent = document.getElementById('main-content');
+        const usernameDisplay = document.getElementById('user-username');
+        const rankDisplayElement = document.getElementById('user-rank-display');
+        const logoutButton = document.getElementById('logout-button');
+        const problemForm = document.getElementById('problem-form');
+        const problemDescriptionInput = document.getElementById('problem-description');
+        const problemSubmitMessage = document.getElementById('problem-submit-message');
+        const solutionListUl = document.getElementById('solution-list-ul');
+        const refreshSolutionsButton = document.getElementById('refresh-solutions-button');
+        const rankingsListOl = document.getElementById('rankings-list');
+        const refreshRankingsButton = document.getElementById('refresh-rankings-button');
+        // Quiz Elemente
+        const quizArea = document.getElementById('js-quiz-area');
+        const resultContainer = document.getElementById('quiz-result');
+        const startButton = document.getElementById('start-js-quiz');
+
+
+        // --- AUTHENTICATION LOGIC ---
+        let currentUser = null; // Variable, um den eingeloggten User zu speichern
+
+        // Zeigt das Login-Formular im Modal an
+        function showLoginForm() {
+            loginBox.innerHTML = `
+                <h2>Login</h2>
+                <form id="actual-login-form">
+                    <label for="login-email">E-Mail:</label>
+                    <input type="email" id="login-email" required autocomplete="email">
+                    <label for="login-password">Passwort:</label>
+                    <input type="password" id="login-password" required autocomplete="current-password">
+                    <div id="auth-message"></div>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="auth-switch">
+                    Noch kein Konto? <a onclick="showRegisterForm()">Registrieren</a>
+                </div>
+            `;
+            loginModal.style.display = 'flex';
+            document.getElementById('actual-login-form').addEventListener('submit', handleLogin);
+        }
+
+        // Zeigt das Registrierungs-Formular im Modal an
+        function showRegisterForm() {
+             loginBox.innerHTML = `
+                <h2>Registrieren</h2>
+                <form id="actual-register-form">
+                    <label for="register-email">E-Mail:</label>
+                    <input type="email" id="register-email" required autocomplete="email">
+                    <label for="register-password">Passwort (min. 6 Zeichen):</label>
+                    <input type="password" id="register-password" required autocomplete="new-password">
+                     <label for="register-username">Anzeigename:</label> <!-- Optional: Anzeigename direkt erfassen -->
+                     <input type="text" id="register-username" required autocomplete="username">
+                    <div id="auth-message"></div>
+                    <button type="submit">Registrieren</button>
+                </form>
+                <div class="auth-switch">
+                    Schon ein Konto? <a onclick="showLoginForm()">Login</a>
+                </div>
+            `;
+            loginModal.style.display = 'flex';
+            document.getElementById('actual-register-form').addEventListener('submit', handleRegister);
+        }
+
+        // Verarbeitet den Login-Versuch
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('auth-message');
+            messageDiv.textContent = 'Logge ein...';
+            messageDiv.className = ''; // Reset style
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                // Login erfolgreich - onAuthStateChange wird ausgelöst
+                console.log('Login erfolgreich', data);
+                messageDiv.textContent = 'Login erfolgreich! Lade Spiel...';
+                messageDiv.className = 'success';
+                 // Modal muss nicht manuell geschlossen werden, onAuthStateChange macht das
+            } catch (error) {
+                console.error('Login Fehler:', error.message);
+                messageDiv.textContent = `Login fehlgeschlagen: ${error.message}`;
+            }
+        }
+
+        // Verarbeitet den Registrierungs-Versuch
+        async function handleRegister(event) {
+             event.preventDefault();
+             const email = document.getElementById('register-email').value;
+             const password = document.getElementById('register-password').value;
+             const username = document.getElementById('register-username').value.trim(); // Anzeigename
+             const messageDiv = document.getElementById('auth-message');
+             messageDiv.textContent = 'Registriere...';
+             messageDiv.className = '';
+
+             if (!username) {
+                 messageDiv.textContent = 'Bitte gib einen Anzeigenamen an.';
+                 return;
+             }
+             if (password.length < 6) {
+                 messageDiv.textContent = 'Passwort muss mindestens 6 Zeichen lang sein.';
+                 return;
+             }
+
+             try {
+                // User in Supabase Auth erstellen
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        // Zusätzliche Daten, die beim User gespeichert werden (z.B. im 'raw_user_meta_data')
+                        // Supabase erstellt KEIN separates Profil automatisch, das müssen wir ggf. später tun
+                        data: { display_name: username }
+                    }
+                });
+
+                if (authError) throw authError;
+
+                // WICHTIG: Supabase sendet standardmäßig eine Bestätigungs-E-Mail.
+                // Für dieses einfache Beispiel gehen wir davon aus, dass der Nutzer sofort eingeloggt ist
+                // ODER dass E-Mail-Bestätigung in den Supabase-Settings deaktiviert ist.
+                console.log('Registrierung erfolgreich (oder Bestätigungs-Mail gesendet)', authData);
+                messageDiv.textContent = 'Registrierung erfolgreich! Du kannst dich jetzt einloggen.';
+                messageDiv.className = 'success';
+                // Optional: Direkt zum Login wechseln
+                setTimeout(showLoginForm, 1500); // Kurze Pause, damit User Meldung sieht
+
+             } catch (error) {
+                console.error('Registrierungs Fehler:', error.message);
+                messageDiv.textContent = `Registrierung fehlgeschlagen: ${error.message}`;
+             }
+        }
+
+        // Verarbeitet den Logout
+        async function handleLogout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                // Logout erfolgreich - onAuthStateChange wird ausgelöst
+                console.log('Logout erfolgreich');
+                // Manuell UI zurücksetzen (obwohl onAuthStateChange das auch tun sollte)
+                currentUser = null;
+                mainContent.style.display = 'none';
+                logoutButton.style.display = 'none';
+                showLoginForm(); // Zeige Login nach Logout
+            } catch (error) {
+                 console.error('Logout Fehler:', error.message);
+                 alert(`Logout fehlgeschlagen: ${error.message}`);
+            }
+        }
+
+        // Listener für Änderungen im Authentifizierungsstatus (Login, Logout)
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth State Change:', event, session);
+            if (event === 'SIGNED_IN' && session) {
+                // Benutzer ist eingeloggt
+                currentUser = session.user;
+                console.log('Eingeloggter User:', currentUser);
+                // Namen anzeigen (aus Metadaten oder E-Mail als Fallback)
+                usernameDisplay.textContent = currentUser.user_metadata?.display_name || currentUser.email.split('@')[0];
+                loginModal.style.display = 'none'; // Modal ausblenden
+                mainContent.style.display = 'block'; // Hauptinhalt anzeigen
+                logoutButton.style.display = 'inline-block'; // Logout Button zeigen
+                // Lade initiale Daten für den eingeloggten User
+                fetchSolutions();
+                fetchRankings();
+                // Hier könnte man auch den User-Rang aus der DB laden
+            } else if (event === 'SIGNED_OUT') {
+                // Benutzer ist ausgeloggt
+                currentUser = null;
+                mainContent.style.display = 'none'; // Hauptinhalt ausblenden
+                logoutButton.style.display = 'none'; // Logout Button ausblenden
+                usernameDisplay.textContent = 'Spieler'; // Zurücksetzen
+                rankDisplayElement.textContent = 'Rang: Badmoodie'; // Zurücksetzen
+                rankDisplayElement.className = 'rank badmoodie'; // Zurücksetzen
+                showLoginForm(); // Login-Modal anzeigen
+            }
+        });
+
+        // Event Listener für den Logout Button
+        logoutButton.addEventListener('click', handleLogout);
+
+
+        // --- DATENBANK INTERAKTIONEN ---
+
+        // Funktion zum Abrufen von Lösungen
+        async function fetchSolutions() {
+            if (!supabase) return; // Sicherstellen, dass Supabase initialisiert ist
+            console.log('Lade Lösungen...');
+            solutionListUl.innerHTML = '<li class="solution-idea">Lade Lösungen...</li>'; // Ladezustand anzeigen
+
+            try {
+                // WICHTIG: Hier fehlt noch Row Level Security (RLS) in Supabase!
+                // Aktuell könnte jeder alles lesen. RLS muss konfiguriert werden!
+                const { data: solutions, error } = await supabase
+                    .from('solutions') // Name deiner Tabelle
+                    .select('*') // Wähle alle Spalten aus
+                    .order('created_at', { ascending: false }) // Neueste zuerst
+                    .limit(10); // Begrenze auf 10 Einträge
+
+                if (error) throw error;
+
+                console.log('Geladene Lösungen:', solutions);
+                solutionListUl.innerHTML = ''; // Liste leeren
+
+                if (solutions && solutions.length > 0) {
+                    solutions.forEach(sol => {
+                        const li = document.createElement('li');
+                        li.className = 'solution-idea';
+                        // Annahme: Tabelle hat Spalten 'solution_text', 'constraints_text' (oder ähnlich)
+                        li.innerHTML = `
+                            <h4><span class="idea-prefix">Idee:</span> ${sol.solution_text || 'Unbekannte Lösung'}</h4>
+                            <p>${sol.context || ''}</p> <!-- Kontext/Problem hinzufügen falls gespeichert -->
+                            <p class="constraints">${sol.constraints_text || '(Keine Bedingungen angegeben)'}</p>
+                        `;
+                        solutionListUl.appendChild(li);
+                    });
+                } else {
+                     solutionListUl.innerHTML = '<li class="solution-idea">Noch keine Lösungen vorhanden. Reiche ein Problem ein!</li>';
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Lösungen:', error.message);
+                 solutionListUl.innerHTML = `<li class="solution-idea" style="color: #e57373;">Fehler beim Laden der Lösungen: ${error.message}</li>`;
+            }
+        }
+
+        // Funktion zum Abrufen der Bestenliste
+        async function fetchRankings() {
+            if (!supabase) return;
+            console.log('Lade Bestenliste...');
+             rankingsListOl.innerHTML = '<li>Lade Bestenliste...</li>';
+
+            try {
+                 // Daten aus 'quiz_scores' holen, sortieren und limitieren.
+                 // Wir brauchen auch den Usernamen. Dies erfordert oft einen 'join' oder eine separate Abfrage.
+                 // Einfache Version: Holt Scores, Namen müssten separat geholt werden (oder in einer View).
+                const { data: scores, error } = await supabase
+                    .from('quiz_scores') // Name deiner Tabelle für Scores
+                    .select(`
+                        score,
+                        user_id,
+                        profiles ( display_name )
+                     `) // Hole Score, User ID und den Namen aus der verknüpften 'profiles' Tabelle (muss existieren und verknüpft sein!)
+                    .order('score', { ascending: false }) // Höchster Score zuerst
+                    .limit(10); // Top 10
+
+                 if (error) throw error;
+                 console.log('Geladene Scores:', scores);
+
+                 rankingsListOl.innerHTML = ''; // Liste leeren
+
+                 if (scores && scores.length > 0) {
+                    scores.forEach((entry, index) => {
+                        const li = document.createElement('li');
+                        const displayName = entry.profiles?.display_name || 'Anonymer User'; // Fallback
+                        // Beispielhafte Rang-Bestimmung (könnte komplexer sein)
+                        let rankClass = 'bad';
+                        if (entry.score >= 75) rankClass = 'good';
+                        else if (entry.score >= 40) rankClass = 'neutral';
+
+                        li.innerHTML = `
+                            <span class="rank-position">${index + 1}.</span>
+                            <img src="placeholder-avatar.png" alt="Avatar" class="avatar-small">
+                            <span class="rank-name">${displayName}</span>
+                            <span class="rank-status ${rankClass}">${entry.score}%</span>
+                        `;
+                         rankingsListOl.appendChild(li);
+                    });
+                 } else {
+                     rankingsListOl.innerHTML = '<li>Noch keine Einträge in der Bestenliste. Spiel das Quiz!</li>';
+                 }
+
+            } catch (error) {
+                console.error('Fehler beim Laden der Bestenliste:', error.message);
+                rankingsListOl.innerHTML = `<li style="color: #e57373;">Fehler beim Laden der Bestenliste: ${error.message}</li>`;
+            }
+        }
+
+        // Event Listener für Refresh Buttons
+        refreshSolutionsButton.addEventListener('click', fetchSolutions);
+        refreshRankingsButton.addEventListener('click', fetchRankings);
+
+
+        // --- FUNKTIONEN AUFRUFEN (z.B. um KI anzustoßen) ---
+        // Beispiel: Problem einreichen und Lösung generieren lassen
+        problemForm.addEventListener('submit', async (event) => {
+             event.preventDefault();
+             if (!currentUser) {
+                problemSubmitMessage.textContent = 'Bitte zuerst einloggen.';
+                problemSubmitMessage.style.color = '#e57373';
+                return;
+             }
+             const description = problemDescriptionInput.value.trim();
+             if (!description) {
+                problemSubmitMessage.textContent = 'Bitte beschreibe das Problem.';
+                problemSubmitMessage.style.color = '#e57373';
+                return;
+             }
+
+             problemSubmitMessage.textContent = 'Sende Problem und fordere Lösung an...';
+             problemSubmitMessage.style.color = '#888';
+
+             try {
+                 // WICHTIG: Hier rufen wir eine Supabase Edge Function auf.
+                 // Der Name 'generate-solution' ist nur ein Beispiel! Du musst diese Function erstellen.
+                 const { data, error } = await supabase.functions.invoke('generate-solution', {
+                     // Daten, die an die Function gesendet werden
+                     body: JSON.stringify({ problemDescription: description })
+                 });
+
+                 if (error) throw error;
+
+                 console.log('Antwort von Function:', data);
+                 problemSubmitMessage.textContent = 'Problem eingereicht! Lösung wird generiert und erscheint bald unten.';
+                 problemSubmitMessage.style.color = '#6fbf73';
+                 problemDescriptionInput.value = ''; // Feld leeren
+                 // Optional: Lösungen direkt neu laden
+                 setTimeout(fetchSolutions, 2000); // Kleine Verzögerung
+
+             } catch (error) {
+                 console.error('Fehler beim Aufrufen der Function:', error.message);
+                 problemSubmitMessage.textContent = `Fehler: ${error.message}`;
+                 problemSubmitMessage.style.color = '#e57373';
+             }
+        });
+
+
+        // --- QUIZ LOGIC ---
+        const questions = [ // Beispielfragen bleiben clientseitig für Einfachheit
+            { q: "Wie heißt das legendäre Gerät im 3. Stock?", opts: ["Kaffeemaschine 'Espresso-Desaster'", "Drucker 'Papierfresser'", "Scanner 'Streifenhörnchen'"], correct: 1 },
+            { q: "Welches Tool ist NICHT offiziell im Einsatz?", opts: ["Gummienten-Therapeut", "Keks-Belohnungssystem", "Gedankenlese-Helm"], correct: 2 },
+            { q: "Was ist das Hauptziel von 'badmoodgame'?", opts: ["Probleme ignorieren", "Kreative Lösungen finden", "Highscore im Nichtstun"], correct: 1 }
+        ];
+        let currentQuestionIndex = 0;
+        let score = 0; // Score als Prozentsatz oder Punkte
+
+        if (startButton) { startButton.addEventListener('click', startQuiz); }
+
+        function startQuiz() {
+             if (!currentUser) {
+                 alert('Bitte zuerst einloggen, um das Quiz zu spielen!');
+                 return;
+             }
+            startButton.style.display = 'none';
+            currentQuestionIndex = 0;
+            score = 0;
+            resultContainer.innerHTML = '';
+            quizArea.innerHTML = '';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) { showResult(); return; }
+            const qData = questions[currentQuestionIndex];
+            let optionsHTML = '';
+            qData.opts.forEach((option, index) => {
+                optionsHTML += `<button onclick="selectAnswer(${index})">${option}</button>`;
+            });
+            quizArea.innerHTML = `<h4>${qData.q}</h4><div class="quiz-options">${optionsHTML}</div>`;
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (selectedIndex === questions[currentQuestionIndex].correct) {
+                 // Score erhöhen - hier als Anzahl richtiger Antworten
+                 score++;
+            }
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        async function showResult() {
+             quizArea.innerHTML = 'Quiz beendet!';
+             const totalQuestions = questions.length;
+             const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+             let resultText = `Dein Score: ${score} von ${totalQuestions} (${percentage}%). `;
+             resultContainer.innerHTML = resultText + 'Speichere Ergebnis...';
+
+             // --- Score in Datenbank speichern ---
+             if (currentUser) {
+                 try {
+                    // WICHTIG: 'quiz_scores' Tabelle braucht Spalten wie user_id (UUID, foreign key zu auth.users), score (integer), created_at (timestamp)
+                    // Hier verwenden wir upsert: Aktualisiert den Score, falls User schon einen hat, sonst fügt es neuen Eintrag hinzu.
+                    // Es ist besser, nur den *besten* Score zu speichern oder jeden Versuch mit Timestamp.
+                    // Einfache Version: Überschreibt existierenden Score für diesen User.
+                     const { error } = await supabase
+                        .from('quiz_scores')
+                        .upsert({
+                            user_id: currentUser.id,
+                            score: percentage // Speichere Prozentzahl
+                            // Optional: updated_at: new Date()
+                         }, {
+                             onConflict: 'user_id' // Wenn user_id schon existiert, update statt Fehler
+                         });
+
+                     if (error) throw error;
+
+                     resultContainer.innerHTML = resultText + 'Ergebnis gespeichert!';
+                     console.log('Quiz Score gespeichert.');
+                     // Bestenliste neu laden, um Update zu sehen
+                     fetchRankings();
+
+                 } catch (error) {
+                     console.error('Fehler beim Speichern des Quiz Scores:', error.message);
+                      resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler beim Speichern: ${error.message}</span>`;
+                 }
+             } else {
+                 resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler: Nicht eingeloggt.</span>`;
+             }
+             // --- Ende Score Speichern ---
+
+
+            // Visuellen Rang aktualisieren (optional, könnte auch aus DB kommen)
+            let newRankClass = 'rank badmoodie';
+            let newRankText = 'Rang: Badmoodie';
+             if (percentage >= 75) {
+                newRankClass = 'rank goodmoodie'; newRankText = 'Rang: Goodmoodie';
+            } else if (percentage >= 40) {
+                 newRankClass = 'rank neutralmoodie'; newRankText = 'Rang: Neutralmoodie';
+            }
+             if (rankDisplayElement) {
+                rankDisplayElement.textContent = newRankText;
+                rankDisplayElement.className = newRankClass;
+            }
+            startButton.style.display = 'block'; // Startbutton wieder anzeigen
+        }
+
+    </script>
+
+</body>
+</html>
