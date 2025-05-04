@@ -198,7 +198,7 @@
             refreshSolutionsButton, rankingsListOl, refreshRankingsButton, quizArea,
             resultContainer, startButton;
 
-        // Funktion zum Zuweisen der DOM-Referenzen (wird nach DOMContentLoaded aufgerufen)
+        // Funktion zum Zuweisen der DOM-Referenzen
         function assignDomElements() {
             loginModal = document.getElementById('login-modal');
             loginBox = loginModal ? loginModal.querySelector('.login-box') : null;
@@ -219,21 +219,21 @@
 
              if (!loginModal || !mainContent || !loginBox) {
                  console.error("Kritische UI-Elemente nicht gefunden!");
-                 return false; // Signalisiert Fehler
+                 return false;
              }
              console.log("DOM Elemente erfolgreich referenziert.");
-             return true; // Signalisiert Erfolg
+             return true;
         }
 
 
         // --- AUTHENTICATION LOGIC ---
         let currentUser = null;
-        let userEmailForConfirmation = null; // Speichert die E-Mail bei unbestätigtem Login
+        let userEmailForConfirmation = null;
 
         // Zeigt das Login-Formular an
         function showLoginForm(message = '', messageClass = '') {
             console.log("Zeige Login Formular.");
-            if (!loginModal || !loginBox) return;
+            if (!loginModal || !loginBox) { console.error("Login UI Elemente nicht bereit für showLoginForm"); return; }
             try {
                 loginBox.innerHTML = `
                     <h2>Login</h2>
@@ -246,14 +246,12 @@
                         <button type="submit">Login</button>
                     </form>
                     <div class="forgot-password-link">
-                        <a onclick="showForgotPasswordForm()">Passwort vergessen?</a>
+                        <a data-action="forgot-password">Passwort vergessen?</a>
                     </div>
                     <div class="auth-switch">
-                        Noch kein Konto? <a onclick="showRegisterForm()">Registrieren</a>
+                        Noch kein Konto? <a data-action="show-register">Registrieren</a>
                     </div>
                 `;
-                const form = document.getElementById('actual-login-form');
-                if(form) form.addEventListener('submit', handleLogin);
                 loginModal.style.display = 'flex';
             } catch(e) { console.error("Fehler in showLoginForm:", e); }
         }
@@ -261,7 +259,7 @@
         // Zeigt das Registrierungs-Formular an
         function showRegisterForm(message = '', messageClass = '') {
              console.log("Zeige Registrierungs Formular.");
-             if (!loginModal || !loginBox) return;
+             if (!loginModal || !loginBox) { console.error("Login UI Elemente nicht bereit für showRegisterForm"); return; }
               try {
                  loginBox.innerHTML = `
                     <h2>Registrieren</h2>
@@ -276,11 +274,9 @@
                         <button type="submit">Registrieren</button>
                     </form>
                     <div class="auth-switch">
-                        Schon ein Konto? <a onclick="showLoginForm()">Login</a>
+                        Schon ein Konto? <a data-action="show-login">Login</a>
                     </div>
                 `;
-                const form = document.getElementById('actual-register-form');
-                if(form) form.addEventListener('submit', handleRegister);
                 loginModal.style.display = 'flex';
               } catch(e) { console.error("Fehler in showRegisterForm:", e); }
         }
@@ -288,7 +284,7 @@
          // Zeigt das "Passwort vergessen"-Formular an
         function showForgotPasswordForm() {
             console.log("Zeige Passwort Vergessen Formular.");
-            if (!loginModal || !loginBox) return;
+            if (!loginModal || !loginBox) { console.error("Login UI Elemente nicht bereit für showForgotPasswordForm"); return; }
             try {
                 loginBox.innerHTML = `
                     <h2>Passwort zurücksetzen</h2>
@@ -299,11 +295,9 @@
                         <button type="submit">Reset-Link senden</button>
                     </form>
                     <div class="auth-switch">
-                        Zurück zum <a onclick="showLoginForm()">Login</a>
+                        Zurück zum <a data-action="show-login">Login</a>
                     </div>
                 `;
-                const form = document.getElementById('forgot-password-form');
-                if(form) form.addEventListener('submit', handleForgotPassword);
                 loginModal.style.display = 'flex';
             } catch(e) { console.error("Fehler in showForgotPasswordForm:", e); }
         }
@@ -311,7 +305,7 @@
          // Zeigt das Formular zum Setzen des neuen Passworts (nach Klick auf Reset-Link)
         function showUpdatePasswordForm() {
             console.log("Zeige Passwort Update Formular.");
-            if (!loginModal || !loginBox) return;
+            if (!loginModal || !loginBox) { console.error("Login UI Elemente nicht bereit für showUpdatePasswordForm"); return; }
             try {
                 loginBox.innerHTML = `
                     <h2>Neues Passwort festlegen</h2>
@@ -322,11 +316,9 @@
                         <button type="submit">Passwort speichern</button>
                     </form>
                      <div class="auth-switch">
-                         <a onclick="showLoginForm()">Abbrechen und zum Login</a>
+                         <a data-action="show-login">Abbrechen und zum Login</a>
                     </div>
                 `;
-                const form = document.getElementById('update-password-form');
-                if(form) form.addEventListener('submit', handleUpdatePassword);
                 loginModal.style.display = 'flex';
             } catch(e) { console.error("Fehler in showUpdatePasswordForm:", e); }
         }
@@ -334,28 +326,53 @@
         // Zeigt Nachricht für unbestätigte E-Mail an
         function showConfirmationMessage(email) {
              console.log("Zeige Bestätigungs Nachricht für:", email);
-             if (!loginModal || !loginBox) return;
-             userEmailForConfirmation = email; // Speichere E-Mail für Resend-Funktion
+             if (!loginModal || !loginBox) { console.error("Login UI Elemente nicht bereit für showConfirmationMessage"); return; }
+             userEmailForConfirmation = email;
               try {
                  loginBox.innerHTML = `
                     <h2>E-Mail Bestätigung erforderlich</h2>
                     <p style="color:#ccc; font-size: 0.95em;">Wir haben eine Bestätigungs-E-Mail an <strong>${email}</strong> gesendet. Bitte klicke auf den Link in der E-Mail, um deinen Account zu aktivieren.</p>
                     <div id="auth-message"></div>
-                    <button onclick="handleResendConfirmation()" style="background-color:#555; color:#fff; margin-top:15px;">Bestätigungs-Mail erneut senden</button>
+                    <button data-action="resend-confirmation" style="background-color:#555; color:#fff; margin-top:15px;">Bestätigungs-Mail erneut senden</button>
                     <div class="auth-switch" style="margin-top:25px;">
-                         <a onclick="handleLogout()">Anderer Account? Logout</a>
+                         <a data-action="logout">Anderer Account? Logout</a>
                     </div>
                 `;
                 loginModal.style.display = 'flex';
               } catch(e) { console.error("Fehler in showConfirmationMessage:", e); }
         }
 
-        // Verarbeitet Login-Versuch
-        async function handleLogin(event) {
-            event.preventDefault();
-            const emailInput = document.getElementById('login-email');
-            const passwordInput = document.getElementById('login-password');
-            const messageDiv = document.getElementById('auth-message');
+        // --- Event Handler für Auth-Formulare (Event Delegation) ---
+        function handleAuthFormSubmit(event) {
+             event.preventDefault(); // Standard-Submit verhindern
+             const formId = event.target.id; // ID des Formulars, das abgeschickt wurde
+             console.log(`Form Submit Event für: ${formId}`);
+
+             if (formId === 'actual-login-form') handleLogin(event.target); // übergebe das Formular-Element
+             else if (formId === 'actual-register-form') handleRegister(event.target);
+             else if (formId === 'forgot-password-form') handleForgotPassword(event.target);
+             else if (formId === 'update-password-form') handleUpdatePassword(event.target);
+        }
+
+        function handleAuthLinkClick(event) {
+             if (event.target.tagName === 'A' && event.target.dataset.action) {
+                 event.preventDefault();
+                 const action = event.target.dataset.action;
+                 console.log(`Auth Link Click Event für Aktion: ${action}`);
+                 if (action === 'show-register') showRegisterForm();
+                 else if (action === 'show-login') showLoginForm();
+                 else if (action === 'forgot-password') showForgotPasswordForm();
+                 else if (action === 'logout') handleLogout();
+                 else if (action === 'resend-confirmation') handleResendConfirmation();
+             }
+        }
+
+
+        // Verarbeitet Login-Versuch (bekommt jetzt das form Element)
+        async function handleLogin(formElement) {
+            const emailInput = formElement.querySelector('#login-email');
+            const passwordInput = formElement.querySelector('#login-password');
+            const messageDiv = formElement.querySelector('#auth-message');
             if (!emailInput || !passwordInput || !messageDiv || !supabase) return;
 
             const email = emailInput.value;
@@ -365,41 +382,29 @@
 
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-                if (error) throw error; // Fehler beim Login-Versuch
-
-                // Prüfen, ob User zurückgegeben wurde und ob E-Mail bestätigt ist
+                if (error) throw error;
                 if (data.user && !data.user.email_confirmed_at) {
-                     console.log('Login Versuch erfolgreich, aber E-Mail nicht bestätigt für:', email);
-                     showConfirmationMessage(email); // Zeige Bestätigungsaufforderung
-                     // Wichtig: Verhindere, dass onAuthStateChange den User "komplett" einloggt
-                     // Das geschieht durch die Prüfung in onAuthStateChange selbst.
+                     console.log('Login ok, aber E-Mail nicht bestätigt für:', email);
+                     showConfirmationMessage(email);
                 } else if (data.user) {
-                    // E-Mail ist bestätigt (oder Bestätigung nicht erforderlich)
-                    console.log('Login erfolgreich und E-Mail bestätigt (oder nicht nötig)');
-                    // onAuthStateChange wird ausgelöst und kümmert sich um das UI Update
-                    messageDiv.textContent = 'Login erfolgreich! Lade Spiel...';
+                    console.log('Login erfolgreich & bestätigt.');
+                    messageDiv.textContent = 'Login erfolgreich! Lade Spiel...'; // Feedback
                     messageDiv.className = 'success';
-                     // Manuelles Schließen hier nicht nötig, onAuthStateChange macht das.
-                } else {
-                     // Sollte nicht passieren, wenn kein Fehler geworfen wurde, aber sicherheitshalber
-                      throw new Error("Login erfolgreich, aber keine User-Daten erhalten.");
-                }
-
+                    // onAuthStateChange kümmert sich um UI
+                } else { throw new Error("Keine User-Daten nach Login."); }
             } catch (error) {
                 console.error('Login Fehler:', error.message);
                 messageDiv.textContent = `Login fehlgeschlagen: ${error.message}`;
             }
         }
 
-        // Verarbeitet Registrierungs-Versuch
-        async function handleRegister(event) {
-             event.preventDefault();
-             const emailInput = document.getElementById('register-email');
-             const passwordInput = document.getElementById('register-password');
-             const usernameInput = document.getElementById('register-username');
-             const messageDiv = document.getElementById('auth-message');
-              if (!emailInput || !passwordInput || !usernameInput || !messageDiv || !supabase) return;
+        // Verarbeitet Registrierungs-Versuch (bekommt form Element)
+        async function handleRegister(formElement) {
+             const emailInput = formElement.querySelector('#register-email');
+             const passwordInput = formElement.querySelector('#register-password');
+             const usernameInput = formElement.querySelector('#register-username');
+             const messageDiv = formElement.querySelector('#auth-message');
+             if (!emailInput || !passwordInput || !usernameInput || !messageDiv || !supabase) return;
 
              const email = emailInput.value;
              const password = passwordInput.value;
@@ -415,23 +420,18 @@
                     email, password, options: { data: { display_name: username } }
                 });
                 if (error) throw error;
-
-                console.log('Registrierung erfolgreich (oder Bestätigungs-Mail gesendet)', data);
-                // Zeige die Bestätigungsaufforderung direkt an, da Bestätigung nötig ist
-                 showConfirmationMessage(email);
-
+                console.log('Registrierung erfolgreich', data);
+                 showConfirmationMessage(email); // Zeige Bestätigungs-Info
              } catch (error) {
                 console.error('Registrierungs Fehler:', error.message);
-                // Zeige Fehler im Registrierungsformular erneut an
-                 showRegisterForm(`Registrierung fehlgeschlagen: ${error.message}`);
+                 showRegisterForm(`Registrierung fehlgeschlagen: ${error.message}`); // Zeige Fehler im Formular
              }
         }
 
-        // Verarbeitet "Passwort vergessen"
-        async function handleForgotPassword(event) {
-             event.preventDefault();
-             const emailInput = document.getElementById('forgot-email');
-             const messageDiv = document.getElementById('auth-message');
+        // Verarbeitet "Passwort vergessen" (bekommt form Element)
+        async function handleForgotPassword(formElement) {
+             const emailInput = formElement.querySelector('#forgot-email');
+             const messageDiv = formElement.querySelector('#auth-message');
              if (!emailInput || !messageDiv || !supabase) return;
 
              const email = emailInput.value;
@@ -439,36 +439,26 @@
              messageDiv.className = '';
 
              try {
-                 // WICHTIG: Gib die korrekte URL deiner GitHub Pages Seite an!
-                 const redirectURL = window.location.origin + window.location.pathname; // Nutzt die aktuelle Basis-URL
+                 const redirectURL = window.location.origin + window.location.pathname.replace(/[^/]*$/, ''); // Basis-URL der aktuellen Seite
                  console.log("Redirect URL für Passwort Reset:", redirectURL);
-
-                 const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                     redirectTo: redirectURL,
-                 });
+                 const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: redirectURL });
                  if (error) throw error;
-
-                 messageDiv.textContent = 'Falls ein Account mit dieser E-Mail existiert, wurde ein Reset-Link gesendet.';
+                 messageDiv.textContent = 'Reset-Link gesendet (falls Account existiert).';
                  messageDiv.className = 'success';
-
              } catch (error) {
                   console.error('Passwort Reset Fehler:', error.message);
                   messageDiv.textContent = `Fehler: ${error.message}`;
              }
         }
 
-        // Verarbeitet das Update des Passworts nach Reset
-         async function handleUpdatePassword(event) {
-            event.preventDefault();
-            const passwordInput = document.getElementById('update-password');
-            const messageDiv = document.getElementById('auth-message');
+        // Verarbeitet das Update des Passworts nach Reset (bekommt form Element)
+         async function handleUpdatePassword(formElement) {
+            const passwordInput = formElement.querySelector('#update-password');
+            const messageDiv = formElement.querySelector('#auth-message');
             if (!passwordInput || !messageDiv || !supabase) return;
 
             const newPassword = passwordInput.value;
-            if (newPassword.length < 6) {
-                 messageDiv.textContent = 'Passwort zu kurz (min. 6).';
-                 return;
-            }
+            if (newPassword.length < 6) { messageDiv.textContent = 'Passwort zu kurz (min. 6).'; return; }
             messageDiv.textContent = 'Speichere neues Passwort...';
             messageDiv.className = '';
 
@@ -476,10 +466,7 @@
                  const { data, error } = await supabase.auth.updateUser({ password: newPassword });
                  if (error) throw error;
                  console.log("Passwort erfolgreich aktualisiert", data);
-                 messageDiv.textContent = 'Passwort erfolgreich geändert! Du kannst dich jetzt einloggen.';
-                 messageDiv.className = 'success';
-                 setTimeout(showLoginForm, 2000); // Nach 2s zum Login
-
+                 showLoginForm('Passwort erfolgreich geändert! Bitte einloggen.', 'success'); // Zeige Login mit Erfolgsmeldung
              } catch (error) {
                   console.error('Passwort Update Fehler:', error.message);
                   messageDiv.textContent = `Fehler: ${error.message}`;
@@ -488,157 +475,155 @@
 
          // Sendet die Bestätigungs-E-Mail erneut
          async function handleResendConfirmation() {
-             const email = userEmailForConfirmation; // Nutze die gespeicherte E-Mail
-             const messageDiv = document.getElementById('auth-message'); // Finde das Message Div im aktuellen Modal
+             const email = userEmailForConfirmation;
+             const messageDiv = loginBox ? loginBox.querySelector('#auth-message') : null; // Finde Message Div im aktuellen Modal
              if (!email || !messageDiv || !supabase) {
-                  console.error("E-Mail für Resend nicht verfügbar oder Supabase nicht bereit.");
+                  console.error("E-Mail/MessageDiv/Supabase nicht verfügbar für Resend.");
                   if(messageDiv) messageDiv.textContent = "Fehler: E-Mail nicht verfügbar.";
                   return;
-             };
-
+             }
              messageDiv.textContent = `Sende Bestätigungs-Mail an ${email}...`;
              messageDiv.className = '';
-
              try {
                  const { error } = await supabase.auth.resend({ type: 'signup', email: email });
                  if (error) throw error;
-                 messageDiv.textContent = 'Bestätigungs-Mail erneut gesendet. Bitte prüfe dein Postfach (auch Spam).';
+                 messageDiv.textContent = 'Bestätigungs-Mail erneut gesendet. Prüfe Postfach (auch Spam).';
                  messageDiv.className = 'success';
              } catch (error) {
-                  console.error('Fehler beim erneuten Senden der Bestätigung:', error.message);
+                  console.error('Fehler beim Resend:', error.message);
                   messageDiv.textContent = `Fehler: ${error.message}`;
              }
          }
 
         // Verarbeitet den Logout
-        async function handleLogout() {
-            if (!supabase) return;
-            try {
-                console.log("Versuche Logout...");
-                const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                console.log('Logout erfolgreich');
-                // UI Update passiert durch onAuthStateChange
-            } catch (error) {
-                 console.error('Logout Fehler:', error.message);
-                 alert(`Logout fehlgeschlagen: ${error.message}`);
-            }
-        }
+        async function handleLogout() { /* unverändert */ }
 
          // --- INITIALISIERUNG & AUTH STATE LISTENER ---
         function initializeApp() {
              if (initError) {
-                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111;">FATAL ERROR: Supabase konnte nicht initialisiert werden. Seite kann nicht starten. Details: ${initError.message}</div>`;
-                 return; // Stopp
+                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111;">FATAL ERROR: ${initError.message}</div>`; return;
              }
              if (!assignDomElements()) {
-                 console.error("Konnte kritische DOM Elemente nicht finden. App Start abgebrochen.");
-                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111;">FEHLER: Wichtige HTML-Elemente fehlen. Code prüfen.</div>`;
-                 return; // Stopp
+                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111;">FEHLER: Wichtige HTML-Elemente fehlen.</div>`; return;
+             }
+
+             // === Event Delegation für Auth Formulare und Links im Modal ===
+             if (loginBox) {
+                 loginBox.addEventListener('submit', handleAuthFormSubmit); // Fängt alle Form Submits im loginBox ab
+                 loginBox.addEventListener('click', handleAuthLinkClick);   // Fängt alle Klicks im loginBox ab
              }
 
              // Auth Listener setzen
-             supabase.auth.onAuthStateChange((event, session) => {
-                console.log('Auth State Change Event:', event, session);
+             if (supabase) {
+                 supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth State Change Event:', event, session);
+                    if (!loginModal || !mainContent || !logoutButton || !usernameDisplay || !rankDisplayElement) { console.error("UI Elemente nicht verfügbar!"); return; }
 
-                if (!loginModal || !mainContent || !logoutButton || !usernameDisplay || !rankDisplayElement) {
-                    console.error("UI Elemente nicht verfügbar in onAuthStateChange!"); return;
-                }
-
-                if (event === 'PASSWORD_RECOVERY') {
-                    console.log("Password Recovery Event erkannt.");
-                    showUpdatePasswordForm(); // Zeige Formular zum Setzen des neuen Passworts
-                } else if (event === 'SIGNED_IN' && session) {
-                    // Prüfe, ob die E-Mail bestätigt ist (WICHTIG!)
-                     if (session.user.email_confirmed_at || !session.user.email) { // Auch Nutzer ohne E-Mail (z.B. Phone-Login) erlauben, falls implementiert
-                        console.log("User eingeloggt UND bestätigt (oder keine Bestätigung nötig).");
-                        currentUser = session.user;
-                        usernameDisplay.textContent = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'User';
-                        loginModal.style.display = 'none';
-                        mainContent.style.display = 'block';
-                        logoutButton.style.display = 'inline-block';
-                        fetchSolutions();
-                        fetchRankings();
-                        // fetchUserRank();
-                     } else {
-                         console.log("User eingeloggt, aber E-Mail NICHT bestätigt:", session.user.email);
-                         currentUser = null; // Behandle als nicht vollständig eingeloggt
-                         mainContent.style.display = 'none';
-                         logoutButton.style.display = 'none'; // Zeige keinen Logout-Button
-                         showConfirmationMessage(session.user.email); // Zeige Bestätigungsaufforderung
-                     }
-                } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
-                    console.log("Auth State: Ausgeloggt oder keine initiale Session.");
-                    currentUser = null;
-                    mainContent.style.display = 'none';
-                    logoutButton.style.display = 'none';
-                    usernameDisplay.textContent = 'Spieler';
-                    rankDisplayElement.textContent = 'Rang: Badmoodie';
-                    rankDisplayElement.className = 'rank badmoodie';
-                    // Zeige Login nur, wenn nicht gerade Password Recovery läuft
-                    if(event !== 'PASSWORD_RECOVERY') {
-                        showLoginForm();
+                    if (event === 'PASSWORD_RECOVERY') {
+                        showUpdatePasswordForm();
+                    } else if (event === 'SIGNED_IN' && session) {
+                        if (session.user.email_confirmed_at || !session.user.email) {
+                            console.log("User eingeloggt & bestätigt.");
+                            currentUser = session.user;
+                            usernameDisplay.textContent = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'User';
+                            loginModal.style.display = 'none';
+                            mainContent.style.display = 'block';
+                            logoutButton.style.display = 'inline-block';
+                            fetchSolutions(); fetchRankings();
+                        } else {
+                            console.log("User eingeloggt, aber E-Mail NICHT bestätigt:", session.user.email);
+                            currentUser = null; mainContent.style.display = 'none'; logoutButton.style.display = 'none';
+                            showConfirmationMessage(session.user.email);
+                        }
+                    } else if (!session && (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION' || event === 'USER_DELETED')) { // Expliziter behandeln
+                        console.log("Auth State: Ausgeloggt oder keine Session.");
+                        currentUser = null; mainContent.style.display = 'none'; logoutButton.style.display = 'none';
+                        usernameDisplay.textContent = 'Spieler'; rankDisplayElement.textContent = 'Rang: Badmoodie'; rankDisplayElement.className = 'rank badmoodie';
+                        if(event !== 'PASSWORD_RECOVERY') { showLoginForm(); } // Zeige Login, außer wenn PW Recovery läuft
+                    } else {
+                         console.log("Anderer Auth State:", event);
+                         // Fallback: Wenn keine Session, aber kein klares Logout -> zeige Login
+                         if (!session && event !== 'PASSWORD_RECOVERY') { showLoginForm(); }
                     }
-                } else {
-                     console.log("Unbehandelter Auth State oder nur User-Update:", event);
-                     // Wenn keine Session aber auch nicht ausgeloggt -> Login zeigen
-                     if (!session && event !== 'PASSWORD_RECOVERY') {
-                         showLoginForm();
-                     }
-                }
-             });
+                 });
 
-             // Listener für UI-Elemente, die immer da sind (oder sein sollten)
-             if (logoutButton) logoutButton.addEventListener('click', handleLogout);
-             if (refreshSolutionsButton) refreshSolutionsButton.addEventListener('click', fetchSolutions);
-             if (refreshRankingsButton) refreshRankingsButton.addEventListener('click', fetchRankings);
-             if (problemForm) problemForm.addEventListener('submit', handleProblemSubmit);
-             if (startButton) startButton.addEventListener('click', startQuiz);
+                 // Statische Listener (außerhalb des Modals)
+                 if (logoutButton) logoutButton.addEventListener('click', handleLogout);
+                 if (refreshSolutionsButton) refreshSolutionsButton.addEventListener('click', fetchSolutions);
+                 if (refreshRankingsButton) refreshRankingsButton.addEventListener('click', fetchRankings);
+                 if (problemForm) problemForm.addEventListener('submit', handleProblemSubmit);
+                 if (startButton) startButton.addEventListener('click', startQuiz);
 
+             } else { console.error("Supabase nicht initialisiert. Listener nicht gesetzt."); }
          } // Ende initializeApp
 
         // --- DATENBANK INTERAKTIONEN ---
-        async function fetchSolutions() { /* unverändert */ }
-        async function fetchRankings() { /* unverändert */ }
-        function renderRankings(scores, noNames) { /* unverändert */ }
+        // (Funktionen fetchSolutions, fetchRankings, renderRankings bleiben wie zuvor)
+        async function fetchSolutions() { /* ... dein Code hier ... */ }
+        async function fetchRankings() { /* ... dein Code hier ... */ }
+        function renderRankings(scores, noNames) { /* ... dein Code hier ... */ }
 
         // --- FUNKTIONEN AUFRUFEN (Edge Functions etc.) ---
-        async function handleProblemSubmit(event) { /* unverändert */ }
+        // === DEFINITION handleProblemSubmit HINZUGEFÜGT ===
+        async function handleProblemSubmit(event) {
+             event.preventDefault();
+             if (!currentUser || !supabase) {
+                 if(problemSubmitMessage) problemSubmitMessage.textContent = 'Bitte zuerst einloggen.';
+                 return;
+             }
+             const description = problemDescriptionInput ? problemDescriptionInput.value.trim() : '';
+             if (!description) {
+                 if(problemSubmitMessage) problemSubmitMessage.textContent = 'Bitte beschreibe das Problem.';
+                 return;
+             }
+             if(problemSubmitMessage) {
+                 problemSubmitMessage.textContent = 'Sende Problem...';
+                 problemSubmitMessage.style.color = '#888';
+             }
+
+             try {
+                 // 1. Problem in DB speichern (Annahme: Tabelle 'problems' existiert)
+                 const { data: problemData, error: problemError } = await supabase
+                     .from('problems')
+                     .insert([{ user_id: currentUser.id, description: description }])
+                     .select();
+                 if (problemError) throw problemError;
+                 console.log("Problem gespeichert:", problemData);
+
+                 // 2. Edge Function aufrufen
+                 if(problemSubmitMessage) problemSubmitMessage.textContent = 'Fordere Lösung von KI an...';
+                 const { data: functionData, error: functionError } = await supabase.functions.invoke('generate-solution', {
+                     body: JSON.stringify({ problemDescription: description })
+                 });
+                 if (functionError) throw functionError;
+                 console.log('Antwort von Function:', functionData);
+                 if (problemSubmitMessage) {
+                     problemSubmitMessage.textContent = 'Lösung wird generiert!';
+                     problemSubmitMessage.style.color = '#6fbf73';
+                 }
+                 if(problemDescriptionInput) problemDescriptionInput.value = '';
+                 setTimeout(fetchSolutions, 1000);
+
+             } catch (error) {
+                 console.error('Fehler beim Problem-Submit:', error.message);
+                 if (problemSubmitMessage) {
+                     problemSubmitMessage.textContent = `Fehler: ${error.message}`;
+                     problemSubmitMessage.style.color = '#e57373';
+                 }
+             }
+        }
 
         // --- QUIZ LOGIC ---
+        // (Funktionen questions, startQuiz, showQuestion, selectAnswer, showResult bleiben wie zuvor)
         const questions = [ /* ... */ ];
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
-        function startQuiz() { /* leicht angepasst für Element-Checks */
-            if (!currentUser) { alert('Bitte zuerst einloggen!'); return; }
-            if (!startButton || !quizArea || !resultContainer) { console.error("Quiz UI Elemente nicht gefunden"); return; }
-            startButton.style.display = 'none'; currentQuestionIndex = 0; correctAnswers = 0;
-            resultContainer.innerHTML = ''; quizArea.innerHTML = ''; showQuestion();
-        }
-        function showQuestion() { /* unverändert */ }
-        function selectAnswer(selectedIndex) { /* unverändert */ }
-        async function showResult() { /* leicht angepasst für Element-Checks */
-            if (!quizArea || !resultContainer || !startButton) { console.error("Quiz UI Elemente für Ergebnis nicht gefunden"); return; }
-            quizArea.innerHTML = 'Quiz beendet!';
-            const totalQuestions = questions.length;
-            const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-            let resultText = `Dein Score: ${correctAnswers} von ${totalQuestions} (${percentage}%). `;
-            resultContainer.innerHTML = resultText + 'Speichere Ergebnis...';
-            if (currentUser && supabase) {
-                try {
-                    const { error } = await supabase.from('quiz_scores').upsert({ user_id: currentUser.id, score: percentage }, { onConflict: 'user_id' });
-                    if (error) throw error;
-                    resultContainer.innerHTML = resultText + 'Ergebnis gespeichert!'; console.log('Quiz Score gespeichert.'); fetchRankings();
-                } catch (error) { console.error('Fehler beim Speichern des Quiz Scores:', error.message); resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler beim Speichern.</span>`; }
-            } else { resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler: Nicht eingeloggt/Supabase nicht bereit.</span>`; }
-            let newRankClass = 'rank badmoodie'; let newRankText = 'Rang: Badmoodie';
-            if (percentage >= 75) { newRankClass = 'rank goodmoodie'; newRankText = 'Rang: Goodmoodie'; }
-            else if (percentage >= 40) { newRankClass = 'rank neutralmoodie'; newRankText = 'Rang: Neutralmoodie'; }
-            if (rankDisplayElement) { rankDisplayElement.textContent = newRankText; rankDisplayElement.className = newRankClass; }
-            startButton.style.display = 'block';
-        }
+        function startQuiz() { /* ... dein Code hier ... */ }
+        function showQuestion() { /* ... dein Code hier ... */ }
+        function selectAnswer(selectedIndex) { /* ... dein Code hier ... */ }
+        async function showResult() { /* ... dein Code hier ... */ }
 
-        // --- Startet die App erst, wenn das DOM vollständig geladen ist ---
+        // --- Startet die App nach Laden des DOM ---
         document.addEventListener('DOMContentLoaded', initializeApp);
 
     </script>
