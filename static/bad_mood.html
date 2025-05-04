@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>badmoodgame - Korrektur 10</title>
+    <title>badmoodgame - Korrektur 11</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* === VOLLSTÄNDIGES CSS === */
@@ -57,7 +57,7 @@
     </div>
 
     <script>
-        console.log("SCRIPT START vFinalFix10");
+        console.log("SCRIPT START vFinalFix11"); // Versionsnummer erhöht
 
         // --- SUPABASE INITIALISIERUNG ---
         const SUPABASE_URL = "https://baifviqcjqmdtmjlseun.supabase.co";
@@ -92,29 +92,25 @@
             logoutButton = document.getElementById('logout-button');
 
             if (!loginModal || !mainContent || !loginBox || !logoutButton || !usernameDisplay || !userProfileDiv) {
-                 console.error("FEHLER: Kritische UI-Elemente fehlen!");
-                 return false;
+                 console.error("FEHLER: Kritische UI-Elemente fehlen!"); return false;
              }
-             console.log("assignCoreDomElements: Kern-Elemente OK.");
-             return true;
+             console.log("assignCoreDomElements: Kern-Elemente OK."); return true;
         }
 
         function showUIElement(element) {
              if (!element) { console.warn(`SHOW: Element fehlt.`); return; }
              const displayStyle = (element.id === 'login-modal' || element.classList.contains('user-profile')) ? 'flex' : 'block';
-             console.log(`  -> Zeige #${element.id} (${displayStyle})`);
-             element.style.display = displayStyle;
+             console.log(`  -> Zeige #${element.id} (${displayStyle})`); element.style.display = displayStyle;
         }
         function hideUIElement(element) {
             if (!element) { console.warn(`HIDE: Element fehlt.`); return; }
-            console.log(`  -> Verstecke #${element.id}`);
-            element.style.display = 'none';
+            console.log(`  -> Verstecke #${element.id}`); element.style.display = 'none';
         }
         function updateLoginBox(htmlContent) {
-            if (!loginBox) { console.error("LoginBox nicht verfügbar."); return false; }
-            try { loginBox.innerHTML = htmlContent; return true; }
-            catch(e) { console.error("Fehler loginBox.innerHTML:", e); return false; }
-        }
+             if (!loginBox) { console.error("LoginBox nicht verfügbar."); return false; }
+             try { loginBox.innerHTML = htmlContent; return true; }
+             catch(e) { console.error("Fehler loginBox.innerHTML:", e); return false; }
+         }
 
         // UI Update Funktionen
         function showLoginForm(message = '', messageClass = '') {
@@ -124,17 +120,17 @@
         }
         function showRegisterForm(message = '', messageClass = '') {
              console.log("UI ACTION: showRegisterForm");
-             const html = `<h2>Registrieren</h2><form id="actual-register-form"><label>E-Mail:</label><input type="email" id="register-email" required><label>Passwort (min. 6):</label><input type="password" id="register-password" required minlength="6"><label>Name:</label><input type="text" id="register-username" required><div id="auth-message" class="${messageClass}">${message}</div><button type="submit">Registrieren</button></form><a data-action="show-login">Login</a>`;
+             const html = `<h2>Registrieren</h2><form id="actual-register-form"><label>E-Mail:</label><input type="email" id="register-email" required autocomplete="email"><label>Passwort (min. 6):</label><input type="password" id="register-password" required minlength="6" autocomplete="new-password"><label>Name:</label><input type="text" id="register-username" required autocomplete="username"><div id="auth-message" class="${messageClass}">${message}</div><button type="submit">Registrieren</button></form><a data-action="show-login">Login</a>`;
              if (updateLoginBox(html)) showUIElement(loginModal);
         }
         function showForgotPasswordForm() {
              console.log("UI ACTION: showForgotPasswordForm");
-             const html = `<h2>PW Reset</h2><form id="forgot-password-form"><label>E-Mail:</label><input type="email" id="forgot-email" required><div id="auth-message"></div><button type="submit">Link senden</button></form><a data-action="show-login">Login</a>`;
+             const html = `<h2>PW Reset</h2><form id="forgot-password-form"><label>E-Mail:</label><input type="email" id="forgot-email" required autocomplete="email"><div id="auth-message"></div><button type="submit">Link senden</button></form><a data-action="show-login">Login</a>`;
              if (updateLoginBox(html)) showUIElement(loginModal);
         }
         function showUpdatePasswordForm() {
              console.log("UI ACTION: showUpdatePasswordForm");
-             const html = `<h2>Neues PW</h2><form id="update-password-form"><label>Neues Passwort (min. 6):</label><input type="password" id="update-password" required minlength="6"><div id="auth-message"></div><button type="submit">Speichern</button></form><a data-action="show-login">Abbrechen</a>`;
+             const html = `<h2>Neues PW</h2><form id="update-password-form"><label>Neues Passwort (min. 6):</label><input type="password" id="update-password" required minlength="6" autocomplete="new-password"><div id="auth-message"></div><button type="submit">Speichern</button></form><a data-action="show-login">Abbrechen</a>`;
              if (updateLoginBox(html)) showUIElement(loginModal);
         }
         function showConfirmationMessage(email) {
@@ -149,13 +145,15 @@
             const email = formElement.querySelector('#login-email')?.value;
             const password = formElement.querySelector('#login-password')?.value;
             const messageDiv = formElement.querySelector('#auth-message');
-            if (!email || !password || !messageDiv || !supabase) return;
+            if (!email || !password || !messageDiv || !supabase) { console.error("Login Handler: Input/Supabase fehlt"); return; }
             messageDiv.textContent = 'Logge ein...'; messageDiv.className = '';
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                console.log("Login API Call erfolgreich.");
-                 // Kein UI-Update hier, onAuthStateChange übernimmt
+                 console.log("Login API Call erfolgreich.");
+                 // onAuthStateChange übernimmt jetzt das UI-Update
+                 // Ggf. kurze Erfolgsmeldung, bevor das UI umschaltet
+                  if (data.user) { messageDiv.textContent = 'Erfolgreich! Lade...'; messageDiv.className = 'success'; }
             } catch (error) { console.error("Login Fehler:", error); messageDiv.textContent = `Fehler: ${error.message}`; }
         }
         async function handleRegister(formElement) {
@@ -163,21 +161,22 @@
             const password = formElement.querySelector('#register-password')?.value;
             const username = formElement.querySelector('#register-username')?.value.trim();
             const messageDiv = formElement.querySelector('#auth-message');
-            if (!email || !password || !username || !messageDiv || !supabase) return;
+            if (!email || !password || !username || !messageDiv || !supabase) { console.error("Register Handler: Input/Supabase fehlt"); return; }
             messageDiv.textContent = 'Registriere...'; messageDiv.className = '';
             if (password.length < 6) { messageDiv.textContent = 'Passwort zu kurz.'; return; }
             try {
                 const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { display_name: username } } });
                 if (error) throw error;
                 console.log("Registrierung API Call erfolgreich.");
-                showConfirmationMessage(email); // Zeige direkt Confirmation
+                // Zeige direkt Confirmation UI (wird aber durch onAuthStateChange überschrieben, was ok ist)
+                showConfirmationMessage(email);
                  const confMessageDiv = loginBox?.querySelector('#auth-message');
                  if (confMessageDiv) { confMessageDiv.textContent = 'Registrierung OK! Prüfe Mails.'; confMessageDiv.className = 'success'; }
             } catch (error) { console.error("Register Fehler:", error); showRegisterForm(`Fehler: ${error.message}`); }
         }
         async function handleForgotPassword(formElement) {
              const emailInput = formElement.querySelector('#forgot-email'); const messageDiv = formElement.querySelector('#auth-message');
-             if (!emailInput || !messageDiv || !supabase) return;
+             if (!emailInput || !messageDiv || !supabase) { console.error("Forgot PW Handler: Input/Supabase fehlt"); return; }
              const email = emailInput.value.trim(); if(!email) { messageDiv.textContent = 'E-Mail fehlt.'; return; }
              messageDiv.textContent = 'Sende Link...'; messageDiv.className = '';
              try {
@@ -188,7 +187,7 @@
         }
         async function handleUpdatePassword(formElement) {
              const passwordInput = formElement.querySelector('#update-password'); const messageDiv = formElement.querySelector('#auth-message');
-             if (!passwordInput || !messageDiv || !supabase) return;
+             if (!passwordInput || !messageDiv || !supabase) { console.error("Update PW Handler: Input/Supabase fehlt"); return; }
              const newPassword = passwordInput.value; if (newPassword.length < 6) { messageDiv.textContent = 'Passwort zu kurz.'; return; }
              messageDiv.textContent = 'Speichere...'; messageDiv.className = '';
              try {
@@ -200,7 +199,7 @@
         }
         async function handleResendConfirmation() {
              const email = userEmailForConfirmation; const messageDiv = loginBox?.querySelector('#auth-message');
-             if (!email || !messageDiv || !supabase) return;
+             if (!email || !messageDiv || !supabase) { console.error("Resend Handler: Input/Supabase fehlt"); return; }
              messageDiv.textContent = `Sende Mail an ${email}...`; messageDiv.className = '';
              try {
                  const { error } = await supabase.auth.resend({ type: 'signup', email: email });
@@ -215,20 +214,54 @@
              // UI Update passiert durch onAuthStateChange
         }
 
-        // Event Delegation Handler
-        function handleAuthFormSubmit(event) { /* Wie zuvor */ }
-        function handleAuthLinkClick(event) { /* Wie zuvor */ }
+        // === EVENT DELEGATION HANDLER ===
+        function handleAuthFormSubmit(event) {
+             event.preventDefault();
+             const form = event.target.closest('form');
+             if (!form) return;
+             const formId = form.id;
+             console.log(`Submit Event von Form: #${formId}`);
+             if (formId === 'actual-login-form') handleLogin(form);
+             else if (formId === 'actual-register-form') handleRegister(form);
+             else if (formId === 'forgot-password-form') handleForgotPassword(form);
+             else if (formId === 'update-password-form') handleUpdatePassword(form);
+             else console.warn(`Unbekanntes Formular abgeschickt: ${formId}`);
+        }
+        function handleAuthLinkClick(event) {
+             const targetElement = event.target.closest('a[data-action], button[data-action]');
+             if (targetElement?.dataset?.action) {
+                 event.preventDefault();
+                 const action = targetElement.dataset.action;
+                 console.log(`Click Aktion: ${action}`);
+                 if (action === 'show-register') showRegisterForm();
+                 else if (action === 'show-login') showLoginForm();
+                 else if (action === 'forgot-password') showForgotPasswordForm();
+                 else if (action === 'logout') handleLogout();
+                 else if (action === 'resend-confirmation') handleResendConfirmation();
+                 else console.warn(`Unbekannte Klick-Aktion: ${action}`);
+             }
+        }
 
         // --- INITIALISIERUNG & AUTH STATE LISTENER ---
         function initializeApp() {
              console.log("initializeApp: Start");
              if (initError) { document.body.innerHTML = `<div style='color:red;padding:20px;'>FATAL: ${initError.message}</div>`; return; }
-             if (!assignCoreDomElements()) { return; }
+             if (!assignCoreDomElements()) { return; } // Stoppt, wenn Elemente fehlen
 
-             // Event Listener (Delegation)
-             if (loginBox) { loginBox.addEventListener('submit', handleAuthFormSubmit); loginBox.addEventListener('click', handleAuthLinkClick); }
-             else { console.error("LoginBox fehlt!"); return; }
-             if (logoutButton) logoutButton.addEventListener('click', handleLogout);
+             // Event Delegation Listener an loginBox binden
+             if (loginBox) {
+                 loginBox.removeEventListener('submit', handleAuthFormSubmit); // Vorsichtshalber entfernen
+                 loginBox.removeEventListener('click', handleAuthLinkClick);   // Vorsichtshalber entfernen
+                 loginBox.addEventListener('submit', handleAuthFormSubmit);
+                 loginBox.addEventListener('click', handleAuthLinkClick);
+                 console.log("initializeApp: Event Delegation Listener für loginBox gesetzt.");
+             } else { console.error("LoginBox fehlt! Interaktionen nicht möglich."); return; }
+
+             // Statischer Listener für Logout
+             if (logoutButton) {
+                 logoutButton.removeEventListener('click', handleLogout); // Vorsichtshalber entfernen
+                 logoutButton.addEventListener('click', handleLogout);
+             } else console.warn("Logout Button fehlt.");
 
              // Auth State Listener
              if (supabase) {
@@ -240,38 +273,39 @@
                         // Standard: UI zurücksetzen
                         hideUIElement(mainContent); hideUIElement(loginModal); hideUIElement(userProfileDiv); hideUIElement(logoutButton);
 
-                        // **PASSWORD_RECOVERY ZUERST PRÜFEN**
+                        // --- STATE LOGIK ---
                         if (event === 'PASSWORD_RECOVERY') {
-                            console.log("   STATE: PASSWORD_RECOVERY -> Zeige Update Form");
-                            currentUser = session?.user; // Session ist temporär für Update da
+                            console.log("   STATE: PASSWORD_RECOVERY");
+                            currentUser = session?.user;
                             showUpdatePasswordForm(); // Zeigt Modal
-                        }
-                        // **DANN PRÜFEN OB EINE SESSION EXISTIERT**
-                        else if (session?.user) {
+                        } else if (session?.user) {
                              const user = session.user;
-                             console.log(`   STATE: Session vorhanden. User ${user.id}, Bestätigt: ${user.email_confirmed_at}`);
-                             // **DANN PRÜFEN OB BESTÄTIGT**
-                             if (!user.email_confirmed_at && user.email) { // Explizit unbestätigt
-                                 console.log("   -> AKTION: Zeige Confirmation Message");
-                                 currentUser = null; // Nicht vollständig eingeloggt
-                                 showConfirmationMessage(user.email); // Zeigt Modal
+                             // **ERNEUTER VERSUCH:** Hole den User direkt *bevor* wir die Entscheidung treffen
+                             const { data: { user: freshUser }, error: userError } = await supabase.auth.getUser();
+                             if (userError) { console.error("Fehler bei getUser:", userError); throw userError; }
+                             if (!freshUser) { // Wenn getUser null liefert, obwohl Session da -> Fallback zum Login
+                                 console.warn("getUser lieferte null trotz Session -> Zeige Login");
+                                 showLoginForm("Sitzungsproblem, bitte neu einloggen.");
+                                 return;
+                             }
+
+                             console.log(`   STATE: Session vorhanden. User ${freshUser.id}, Bestätigt: ${freshUser.email_confirmed_at}`);
+                             if (!freshUser.email_confirmed_at && freshUser.email) { // Explizit unbestätigt
+                                 console.log("   -> AKTION: Zeige Confirmation"); currentUser = null;
+                                 showConfirmationMessage(freshUser.email); // Zeigt Modal
                              } else { // Bestätigt oder keine E-Mail
-                                 console.log("   -> AKTION: Zeige Main Content");
-                                 currentUser = user;
+                                 console.log("   -> AKTION: Zeige Main Content"); currentUser = freshUser; // Nutze den frischen User
                                  if(usernameDisplay) usernameDisplay.textContent = currentUser.user_metadata?.display_name || 'User';
                                  showUIElement(mainContent); showUIElement(userProfileDiv); showUIElement(logoutButton);
                              }
-                        }
-                        // **WENN KEINE SESSION UND KEIN PW_RECOVERY**
-                        else {
-                             console.log("   STATE: Keine Session -> Zeige Login Form");
-                             currentUser = null;
+                        } else { // Keine Session
+                             console.log("   STATE: Keine Session"); currentUser = null;
                              if(usernameDisplay) usernameDisplay.textContent = 'Spieler';
                              showLoginForm(); // Zeigt Modal
                         }
                     } catch (error) {
                          console.error("Fehler im onAuthStateChange:", error);
-                         try { showLoginForm(`UI Fehler: ${error.message}`); } catch(e){} // Fallback
+                         try { hideUIElement(mainContent); showLoginForm(`Auth Fehler: ${error.message}`); } catch(e){} // Fallback
                     }
                     console.log("   onAuthChange: UI Update abgeschlossen.");
                  });
