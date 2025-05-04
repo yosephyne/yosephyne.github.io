@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>badmoodgame - Spiel die Lösung!</title>
 
-    <!-- === HIER EINGEFÜGT: Supabase JS Library via CDN (mit defer) === -->
+    <!-- === Supabase JS Library via CDN (OHNE defer, wie es funktioniert hat) === -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -105,7 +105,8 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.85); /* Dunklerer Overlay */
             z-index: 1000; /* Über allem anderen */
-            display: flex; /* Flexbox zum Zentrieren - wird initial von JS gesetzt */
+            /* display: flex; Wird von JS gesetzt, initial KEIN display setzen oder display: none */
+            display: none; /* Startet versteckt */
             align-items: center;
             justify-content: center;
         }
@@ -440,9 +441,11 @@
 <body>
 
     <!-- Login Modal -->
-    <div id="login-modal" style="display: none;"> <!-- Initial versteckt, JS steuert Anzeige -->
+    <div id="login-modal"> <!-- display:none wird jetzt von JS gemanagt -->
         <div class="login-box">
             <!-- Inhalt wird von JS dynamisch gesetzt (Login oder Registrierung) -->
+             <!-- Fallback-Inhalt, falls JS fehlschlägt -->
+             <p style="color: #ccc;">Login wird geladen...</p>
         </div>
     </div>
 
@@ -545,7 +548,7 @@
         </div><!-- /.container -->
 
         <footer>
-            <p>&copy; 2023 badmoodgame by [Dein Unternehmen/Initiator]. Spiel die Lösung!</p>
+            <p>© 2023 badmoodgame by [Dein Unternehmen/Initiator]. Spiel die Lösung!</p>
             <p><a href="#main-content">Nach Oben</a></p>
         </footer>
 
@@ -555,129 +558,171 @@
     <!-- JavaScript (Login & Quiz & Supabase Integration) -->
     <script>
         // --- SUPABASE INITIALISIERUNG ---
-        // WICHTIG: Ersetze die folgenden Platzhalter mit DEINEN Werten aus dem Supabase Dashboard!
-        const SUPABASE_URL = "https://baifviqcjqmdtmjlseun.supabase.co"; // Finde dies unter Project Settings > API
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhaWZ2aXFjanFtZHRtamxzZXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyOTE4MTksImV4cCI6MjA2MTg2NzgxOX0.-zoFCE57MZcTynDVQlsT5K4viVRf0HBtjctNoBH64GA"; // Finde dies unter Project Settings > API (anon public key)
+        const SUPABASE_URL = "https://baifviqcjqmdtmjlseun.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhaWZ2aXFjanFtZHRtamxzZXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyOTE4MTksImV4cCI6MjA2MTg2NzgxOX0.-zoFCE57MZcTynDVQlsT5K4viVRf0HBtjctNoBH64GA";
 
-        let supabase; // Deklariere hier, damit es im globalen Scope ist
+        let supabase = null; // Initialisiere mit null
+        let initError = null; // Variable für Initialisierungsfehler
+
         try {
-            // Prüfen, ob das Supabase-Objekt vom CDN geladen wurde UND die createClient-Funktion existiert
             if (window.supabase && typeof window.supabase.createClient === 'function') {
-                // Den Client über das globale window-Objekt erstellen
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('Supabase Client initialisiert.');
-
-                // === Optionaler Test (kannst du hinzufügen, um die Verbindung zu prüfen) ===
-                // Versucht, die aktuelle Session zu holen. Wenn das klappt, ist die Verbindung ok.
-                /*
-                supabase.auth.getSession().then(({ data: { session }, error }) => {
-                    if (error) {
-                        console.warn('Supabase Verbindungstest fehlgeschlagen (Session):', error.message);
-                    } else {
-                        console.log('Supabase Verbindungstest erfolgreich. Session:', session);
-                    }
-                }).catch(err => {
-                     console.warn('Supabase Verbindungstest fehlgeschlagen (Catch):', err.message);
-                });
-                */
-                // === Ende Optionaler Test ===
-
             } else {
-                // Fehler, wenn die Bibliothek nicht korrekt geladen wurde
-                throw new Error('Supabase Client Library (window.supabase) nicht gefunden oder createClient ist keine Funktion. Prüfe den CDN-Link im <head>.');
+                throw new Error('Supabase Client Library (window.supabase) nicht gefunden oder createClient ist keine Funktion.');
             }
-
         } catch (error) {
-            console.error('Fehler beim Initialisieren des Supabase Clients:', error);
-            // Zeige die Fehlermeldung auf der Seite an, statt nur schwarzem Bildschirm
-            document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111; border-radius: 15px; margin: 20px;">FEHLER: Verbindung zur Datenbank fehlgeschlagen. <br><br>Details: ${error.message}<br><br>Mögliche Ursachen:<ul><li>Ist die Supabase URL korrekt?</li><li>Ist der Supabase Anon Key korrekt?</li><li>Kann der Browser die Supabase URL erreichen (Netzwerk/Firewall)?</li><li>Prüfe die Browser-Konsole (F12) für weitere Details.</li></ul>Bitte Seite neu laden.</div>`;
-            // Stoppt die weitere Ausführung des Skripts, da Supabase nicht verfügbar ist
-            throw error;
+            console.error('FATAL: Fehler beim Initialisieren des Supabase Clients:', error);
+            initError = error; // Speichere den Fehler
         }
 
-
         // --- DOM ELEMENT REFERENZEN ---
-        const loginModal = document.getElementById('login-modal');
-        const loginBox = loginModal.querySelector('.login-box'); // Container für Login/Register Inhalt
-        const mainContent = document.getElementById('main-content');
-        const usernameDisplay = document.getElementById('user-username');
-        const rankDisplayElement = document.getElementById('user-rank-display');
-        const logoutButton = document.getElementById('logout-button');
-        const problemForm = document.getElementById('problem-form');
-        const problemDescriptionInput = document.getElementById('problem-description');
-        const problemSubmitMessage = document.getElementById('problem-submit-message');
-        const solutionListUl = document.getElementById('solution-list-ul');
-        const refreshSolutionsButton = document.getElementById('refresh-solutions-button');
-        const rankingsListOl = document.getElementById('rankings-list');
-        const refreshRankingsButton = document.getElementById('refresh-rankings-button');
-        // Quiz Elemente
-        const quizArea = document.getElementById('js-quiz-area');
-        const resultContainer = document.getElementById('quiz-result');
-        const startButton = document.getElementById('start-js-quiz');
+        // Es ist sicherer, die Referenzen erst zu holen, NACHDEM das DOM sicher geladen ist.
+        let loginModal, loginBox, mainContent, usernameDisplay, rankDisplayElement, logoutButton,
+            problemForm, problemDescriptionInput, problemSubmitMessage, solutionListUl,
+            refreshSolutionsButton, rankingsListOl, refreshRankingsButton, quizArea,
+            resultContainer, startButton;
+
+        // Funktion zum Zuweisen der DOM-Referenzen
+        function assignDomElements() {
+            loginModal = document.getElementById('login-modal');
+            // WICHTIG: loginBox erst holen, NACHDEM loginModal gefunden wurde
+            loginBox = loginModal ? loginModal.querySelector('.login-box') : null;
+            mainContent = document.getElementById('main-content');
+            usernameDisplay = document.getElementById('user-username');
+            rankDisplayElement = document.getElementById('user-rank-display');
+            logoutButton = document.getElementById('logout-button');
+            problemForm = document.getElementById('problem-form');
+            problemDescriptionInput = document.getElementById('problem-description');
+            problemSubmitMessage = document.getElementById('problem-submit-message');
+            solutionListUl = document.getElementById('solution-list-ul');
+            refreshSolutionsButton = document.getElementById('refresh-solutions-button');
+            rankingsListOl = document.getElementById('rankings-list');
+            refreshRankingsButton = document.getElementById('refresh-rankings-button');
+            quizArea = document.getElementById('js-quiz-area');
+            resultContainer = document.getElementById('quiz-result');
+            startButton = document.getElementById('start-js-quiz');
+
+             // Prüfen, ob kritische Elemente für UI-Switch gefunden wurden
+             if (!loginModal || !mainContent || !loginBox) {
+                 console.error("Kritische UI-Elemente (loginModal, mainContent, loginBox) nicht gefunden! IDs im HTML prüfen.");
+                 // Verhindere weiteres Ausführen, wenn Grundelemente fehlen
+                 initError = initError || new Error("Kritische UI-Elemente nicht im DOM gefunden.");
+                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111;">FEHLER: Wichtige HTML-Elemente fehlen (IDs: login-modal, main-content, oder Klasse: login-box). Code prüfen.</div>`;
+                 return false; // Signalisiert Fehler
+             }
+             console.log("DOM Elemente erfolgreich referenziert.");
+             return true; // Signalisiert Erfolg
+        }
 
 
         // --- AUTHENTICATION LOGIC ---
-        let currentUser = null; // Variable, um den eingeloggten User zu speichern
+        let currentUser = null;
 
         // Zeigt das Login-Formular im Modal an
         function showLoginForm() {
-            loginBox.innerHTML = `
-                <h2>Login</h2>
-                <form id="actual-login-form">
-                    <label for="login-email">E-Mail:</label>
-                    <input type="email" id="login-email" required autocomplete="email">
-                    <label for="login-password">Passwort:</label>
-                    <input type="password" id="login-password" required autocomplete="current-password">
-                    <div id="auth-message"></div>
-                    <button type="submit">Login</button>
-                </form>
-                <div class="auth-switch">
-                    Noch kein Konto? <a onclick="showRegisterForm()">Registrieren</a>
-                </div>
-            `;
-            loginModal.style.display = 'flex';
-            document.getElementById('actual-login-form').addEventListener('submit', handleLogin);
+            console.log("Versuche showLoginForm aufzurufen.");
+            // Stellt sicher, dass die Elemente existieren, bevor auf sie zugegriffen wird
+            if (!loginModal || !loginBox) {
+                 console.error("showLoginForm: loginModal oder loginBox nicht gefunden!");
+                 return;
+            }
+            try {
+                loginBox.innerHTML = `
+                    <h2>Login</h2>
+                    <form id="actual-login-form">
+                        <label for="login-email">E-Mail:</label>
+                        <input type="email" id="login-email" required autocomplete="email">
+                        <label for="login-password">Passwort:</label>
+                        <input type="password" id="login-password" required autocomplete="current-password">
+                        <div id="auth-message"></div>
+                        <button type="submit">Login</button>
+                    </form>
+                    <div class="auth-switch">
+                        Noch kein Konto? <a onclick="showRegisterForm()">Registrieren</a>
+                    </div>
+                `;
+                // WICHTIG: Event Listener erst hinzufügen, NACHDEM das Element im DOM ist
+                const loginFormElement = document.getElementById('actual-login-form');
+                if(loginFormElement) {
+                    loginFormElement.addEventListener('submit', handleLogin);
+                } else {
+                     console.error("Login-Formular konnte nach innerHTML nicht gefunden werden.");
+                }
+
+                loginModal.style.display = 'flex'; // Modal sichtbar machen
+                console.log("Login-Modal sollte jetzt sichtbar sein.");
+            } catch (error) {
+                 console.error("Fehler in showLoginForm:", error);
+                 // Zeige Fehler an, falls innerHTML oder style.display fehlschlägt
+                 loginBox.innerHTML = `<p style="color: #e57373;">Fehler beim Anzeigen des Logins.</p>`;
+                 loginModal.style.display = 'flex';
+            }
         }
 
-        // Zeigt das Registrierungs-Formular im Modal an
+        // Zeigt das Registrierungs-Formular im Modal an (Ähnliche Checks wie bei showLoginForm)
         function showRegisterForm() {
-             loginBox.innerHTML = `
-                <h2>Registrieren</h2>
-                <form id="actual-register-form">
-                    <label for="register-email">E-Mail:</label>
-                    <input type="email" id="register-email" required autocomplete="email">
-                    <label for="register-password">Passwort (min. 6 Zeichen):</label>
-                    <input type="password" id="register-password" required autocomplete="new-password">
-                     <label for="register-username">Anzeigename:</label> <!-- Optional: Anzeigename direkt erfassen -->
-                     <input type="text" id="register-username" required autocomplete="username">
-                    <div id="auth-message"></div>
-                    <button type="submit">Registrieren</button>
-                </form>
-                <div class="auth-switch">
-                    Schon ein Konto? <a onclick="showLoginForm()">Login</a>
-                </div>
-            `;
-            loginModal.style.display = 'flex';
-            document.getElementById('actual-register-form').addEventListener('submit', handleRegister);
+             console.log("Versuche showRegisterForm aufzurufen.");
+             if (!loginModal || !loginBox) {
+                 console.error("showRegisterForm: loginModal oder loginBox nicht gefunden!");
+                 return;
+             }
+             try {
+                 loginBox.innerHTML = `
+                    <h2>Registrieren</h2>
+                    <form id="actual-register-form">
+                        <label for="register-email">E-Mail:</label>
+                        <input type="email" id="register-email" required autocomplete="email">
+                        <label for="register-password">Passwort (min. 6 Zeichen):</label>
+                        <input type="password" id="register-password" required autocomplete="new-password">
+                         <label for="register-username">Anzeigename:</label>
+                         <input type="text" id="register-username" required autocomplete="username">
+                        <div id="auth-message"></div>
+                        <button type="submit">Registrieren</button>
+                    </form>
+                    <div class="auth-switch">
+                        Schon ein Konto? <a onclick="showLoginForm()">Login</a>
+                    </div>
+                `;
+                const registerFormElement = document.getElementById('actual-register-form');
+                 if(registerFormElement) {
+                    registerFormElement.addEventListener('submit', handleRegister);
+                 } else {
+                     console.error("Registrierungs-Formular konnte nach innerHTML nicht gefunden werden.");
+                 }
+                loginModal.style.display = 'flex';
+                console.log("Registrierungs-Modal sollte jetzt sichtbar sein.");
+             } catch (error) {
+                  console.error("Fehler in showRegisterForm:", error);
+                  loginBox.innerHTML = `<p style="color: #e57373;">Fehler beim Anzeigen der Registrierung.</p>`;
+                  loginModal.style.display = 'flex';
+             }
         }
 
         // Verarbeitet den Login-Versuch
         async function handleLogin(event) {
             event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            // Hole Elemente hier erneut, falls sie dynamisch sind
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
             const messageDiv = document.getElementById('auth-message');
+            if(!emailInput || !passwordInput || !messageDiv) {
+                 console.error("Login Formular Elemente nicht gefunden.");
+                 return;
+            }
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
             messageDiv.textContent = 'Logge ein...';
-            messageDiv.className = ''; // Reset style
+            messageDiv.className = '';
 
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                // Login erfolgreich - onAuthStateChange wird ausgelöst
                 console.log('Login erfolgreich', data);
+                // Nachricht bleibt, da onAuthStateChange das UI aktualisiert
                 messageDiv.textContent = 'Login erfolgreich! Lade Spiel...';
                 messageDiv.className = 'success';
-                 // Modal muss nicht manuell geschlossen werden, onAuthStateChange macht das
             } catch (error) {
                 console.error('Login Fehler:', error.message);
                 messageDiv.textContent = `Login fehlgeschlagen: ${error.message}`;
@@ -687,45 +732,33 @@
         // Verarbeitet den Registrierungs-Versuch
         async function handleRegister(event) {
              event.preventDefault();
-             const email = document.getElementById('register-email').value;
-             const password = document.getElementById('register-password').value;
-             const username = document.getElementById('register-username').value.trim(); // Anzeigename
+             const emailInput = document.getElementById('register-email');
+             const passwordInput = document.getElementById('register-password');
+             const usernameInput = document.getElementById('register-username');
              const messageDiv = document.getElementById('auth-message');
+             if(!emailInput || !passwordInput || !usernameInput || !messageDiv) {
+                 console.error("Registrierungs Formular Elemente nicht gefunden.");
+                 return;
+             }
+
+             const email = emailInput.value;
+             const password = passwordInput.value;
+             const username = usernameInput.value.trim();
              messageDiv.textContent = 'Registriere...';
              messageDiv.className = '';
 
-             if (!username) {
-                 messageDiv.textContent = 'Bitte gib einen Anzeigenamen an.';
-                 return;
-             }
-             if (password.length < 6) {
-                 messageDiv.textContent = 'Passwort muss mindestens 6 Zeichen lang sein.';
-                 return;
-             }
+             if (!username) { messageDiv.textContent = 'Bitte gib einen Anzeigenamen an.'; return; }
+             if (password.length < 6) { messageDiv.textContent = 'Passwort muss mindestens 6 Zeichen lang sein.'; return; }
 
              try {
-                // User in Supabase Auth erstellen
                 const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        // Zusätzliche Daten, die beim User gespeichert werden (z.B. im 'raw_user_meta_data')
-                        // Supabase erstellt KEIN separates Profil automatisch, das müssen wir ggf. später tun
-                        data: { display_name: username }
-                    }
+                    email, password, options: { data: { display_name: username } }
                 });
-
                 if (authError) throw authError;
-
-                // WICHTIG: Supabase sendet standardmäßig eine Bestätigungs-E-Mail.
-                // Für dieses einfache Beispiel gehen wir davon aus, dass der Nutzer sofort eingeloggt ist
-                // ODER dass E-Mail-Bestätigung in den Supabase-Settings deaktiviert ist.
-                console.log('Registrierung erfolgreich (oder Bestätigungs-Mail gesendet)', authData);
-                messageDiv.textContent = 'Registrierung erfolgreich! Du kannst dich jetzt einloggen.';
+                console.log('Registrierung erfolgreich', authData);
+                messageDiv.textContent = 'Registrierung erfolgreich! Prüfe ggf. E-Mails und logge dich ein.';
                 messageDiv.className = 'success';
-                // Optional: Direkt zum Login wechseln
-                setTimeout(showLoginForm, 1500); // Kurze Pause, damit User Meldung sieht
-
+                setTimeout(showLoginForm, 2000);
              } catch (error) {
                 console.error('Registrierungs Fehler:', error.message);
                 messageDiv.textContent = `Registrierung fehlgeschlagen: ${error.message}`;
@@ -734,223 +767,287 @@
 
         // Verarbeitet den Logout
         async function handleLogout() {
+             if (!supabase) { console.error("Supabase nicht initialisiert."); return; }
             try {
+                console.log("Versuche Logout...");
                 const { error } = await supabase.auth.signOut();
                 if (error) throw error;
-                // Logout erfolgreich - onAuthStateChange wird ausgelöst
                 console.log('Logout erfolgreich');
-                // Manuell UI zurücksetzen (obwohl onAuthStateChange das auch tun sollte)
-                currentUser = null;
-                mainContent.style.display = 'none';
-                logoutButton.style.display = 'none';
-                showLoginForm(); // Zeige Login nach Logout
+                // UI Update passiert durch onAuthStateChange
             } catch (error) {
                  console.error('Logout Fehler:', error.message);
                  alert(`Logout fehlgeschlagen: ${error.message}`);
             }
         }
 
-        // Listener für Änderungen im Authentifizierungsstatus (Login, Logout)
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('Auth State Change:', event, session);
-            if (event === 'SIGNED_IN' && session) {
-                // Benutzer ist eingeloggt
-                currentUser = session.user;
-                console.log('Eingeloggter User:', currentUser);
-                // Namen anzeigen (aus Metadaten oder E-Mail als Fallback)
-                usernameDisplay.textContent = currentUser.user_metadata?.display_name || currentUser.email.split('@')[0];
-                loginModal.style.display = 'none'; // Modal ausblenden
-                mainContent.style.display = 'block'; // Hauptinhalt anzeigen
-                logoutButton.style.display = 'inline-block'; // Logout Button zeigen
-                // Lade initiale Daten für den eingeloggten User
-                fetchSolutions();
-                fetchRankings();
-                // Hier könnte man auch den User-Rang aus der DB laden
-            } else if (event === 'SIGNED_OUT') {
-                // Benutzer ist ausgeloggt
-                currentUser = null;
-                mainContent.style.display = 'none'; // Hauptinhalt ausblenden
-                logoutButton.style.display = 'none'; // Logout Button ausblenden
-                usernameDisplay.textContent = 'Spieler'; // Zurücksetzen
-                rankDisplayElement.textContent = 'Rang: Badmoodie'; // Zurücksetzen
-                rankDisplayElement.className = 'rank badmoodie'; // Zurücksetzen
-                showLoginForm(); // Login-Modal anzeigen
-            }
-        });
+         // --- INITIALISIERUNG DES UI basierend auf Auth State ---
+        function initializeUI() {
+             if (initError) {
+                 // Zeige Initialisierungsfehler, wenn vorhanden
+                 document.body.innerHTML = `<div style="color: #e57373; padding: 20px; font-family: monospace; background: #111; border-radius: 15px; margin: 20px;">FEHLER: Verbindung zur Datenbank fehlgeschlagen. <br><br>Details: ${initError.message}<br><br>Mögliche Ursachen:<ul><li>Ist die Supabase URL korrekt?</li><li>Ist der Supabase Anon Key korrekt?</li><li>Kann der Browser die Supabase URL erreichen (Netzwerk/Firewall)?</li><li>Prüfe die Browser-Konsole (F12) für weitere Details.</li></ul>Bitte Seite neu laden.</div>`;
+                 return; // Stoppe weitere Ausführung
+             }
 
-        // Event Listener für den Logout Button
-        logoutButton.addEventListener('click', handleLogout);
+             if (!assignDomElements()) {
+                // Stoppe, wenn kritische Elemente fehlen
+                return;
+             }
+
+             // Listener für Auth State Changes setzen
+             if (supabase) {
+                 supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth State Change Event:', event, session);
+
+                    // Sicherstellen, dass DOM Elemente verfügbar sind
+                    if (!loginModal || !mainContent || !logoutButton || !usernameDisplay || !rankDisplayElement) {
+                         console.error("UI Elemente nicht verfügbar in onAuthStateChange!");
+                         return;
+                     }
+
+                    if (event === 'SIGNED_IN' && session) {
+                        currentUser = session.user;
+                        console.log('Eingeloggter User:', currentUser);
+                        usernameDisplay.textContent = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'User';
+                        loginModal.style.display = 'none';
+                        mainContent.style.display = 'block';
+                        logoutButton.style.display = 'inline-block';
+                        fetchSolutions();
+                        fetchRankings();
+                        // fetchUserRank(); // Zukünftige Funktion
+                    } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
+                        console.log("Auth State: Ausgeloggt oder keine Session.");
+                        currentUser = null;
+                        mainContent.style.display = 'none';
+                        logoutButton.style.display = 'none';
+                        usernameDisplay.textContent = 'Spieler';
+                        rankDisplayElement.textContent = 'Rang: Badmoodie';
+                        rankDisplayElement.className = 'rank badmoodie';
+                        showLoginForm(); // Zeige Login-Modal
+                    } else {
+                         console.log("Unbehandelter Auth State:", event);
+                         // Im Zweifel Login zeigen, wenn keine Session da ist und nicht SIGNED_IN
+                         if (!session) {
+                              showLoginForm();
+                         }
+                    }
+                 });
+
+                // Logout Button Listener (nur wenn Button gefunden wurde)
+                 if (logoutButton) {
+                    logoutButton.addEventListener('click', handleLogout);
+                 }
+                 // Listener für Refresh Buttons (nur wenn gefunden)
+                 if(refreshSolutionsButton) refreshSolutionsButton.addEventListener('click', fetchSolutions);
+                 if(refreshRankingsButton) refreshRankingsButton.addEventListener('click', fetchRankings);
+                 // Listener für Problem Formular (nur wenn gefunden)
+                 if(problemForm) problemForm.addEventListener('submit', handleProblemSubmit); // Funktion handleProblemSubmit erstellt
+                 // Listener für Quiz Start Button (nur wenn gefunden)
+                 if (startButton) { startButton.addEventListener('click', startQuiz); }
+
+
+             } else {
+                  console.error("Supabase Client konnte nicht initialisiert werden. Auth-Listener nicht gesetzt.");
+             }
+         }
 
 
         // --- DATENBANK INTERAKTIONEN ---
-
-        // Funktion zum Abrufen von Lösungen
+        // Funktion zum Abrufen von Lösungen (Keine Änderungen, außer RLS Hinweis)
         async function fetchSolutions() {
-            if (!supabase) return; // Sicherstellen, dass Supabase initialisiert ist
+            if (!supabase) return;
             console.log('Lade Lösungen...');
-            solutionListUl.innerHTML = '<li class="solution-idea">Lade Lösungen...</li>'; // Ladezustand anzeigen
+            if (!solutionListUl) { console.error("solutionListUl nicht gefunden"); return; }
+            solutionListUl.innerHTML = '<li class="solution-idea">Lade Lösungen...</li>';
 
             try {
-                // WICHTIG: Hier fehlt noch Row Level Security (RLS) in Supabase!
-                // Aktuell könnte jeder alles lesen. RLS muss konfiguriert werden!
+                // TODO WICHTIG: Row Level Security (RLS) in Supabase aktivieren!
                 const { data: solutions, error } = await supabase
-                    .from('solutions') // Name deiner Tabelle
-                    .select('*') // Wähle alle Spalten aus
-                    .order('created_at', { ascending: false }) // Neueste zuerst
-                    .limit(10); // Begrenze auf 10 Einträge
-
+                    .from('solutions')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
                 if (error) throw error;
-
                 console.log('Geladene Lösungen:', solutions);
-                solutionListUl.innerHTML = ''; // Liste leeren
-
+                solutionListUl.innerHTML = '';
                 if (solutions && solutions.length > 0) {
                     solutions.forEach(sol => {
                         const li = document.createElement('li');
                         li.className = 'solution-idea';
-                        // Annahme: Tabelle hat Spalten 'solution_text', 'constraints_text' (oder ähnlich)
+                        // Passe Spaltennamen an deine DB an
                         li.innerHTML = `
-                            <h4><span class="idea-prefix">Idee:</span> ${sol.solution_text || 'Unbekannte Lösung'}</h4>
-                            <p>${sol.context || ''}</p> <!-- Kontext/Problem hinzufügen falls gespeichert -->
-                            <p class="constraints">${sol.constraints_text || '(Keine Bedingungen angegeben)'}</p>
+                            <h4><span class="idea-prefix">Idee:</span> ${sol.solution_text || 'Lösungstext fehlt'}</h4>
+                            <p>${sol.context || ''}</p>
+                            <p class="constraints">${sol.constraints_text || '(Keine Bedingungen)'}</p>
                         `;
                         solutionListUl.appendChild(li);
                     });
                 } else {
-                     solutionListUl.innerHTML = '<li class="solution-idea">Noch keine Lösungen vorhanden. Reiche ein Problem ein!</li>';
+                     solutionListUl.innerHTML = '<li class="solution-idea">Noch keine Lösungen vorhanden.</li>';
                 }
             } catch (error) {
                 console.error('Fehler beim Laden der Lösungen:', error.message);
-                 solutionListUl.innerHTML = `<li class="solution-idea" style="color: #e57373;">Fehler beim Laden der Lösungen: ${error.message}</li>`;
+                 solutionListUl.innerHTML = `<li class="solution-idea" style="color: #e57373;">Fehler: ${error.message}</li>`;
             }
         }
 
-        // Funktion zum Abrufen der Bestenliste
+        // Funktion zum Abrufen der Bestenliste (Keine Änderungen, außer RLS/Profile Hinweis)
         async function fetchRankings() {
             if (!supabase) return;
             console.log('Lade Bestenliste...');
+            if (!rankingsListOl) { console.error("rankingsListOl nicht gefunden"); return; }
              rankingsListOl.innerHTML = '<li>Lade Bestenliste...</li>';
 
             try {
-                 // Daten aus 'quiz_scores' holen, sortieren und limitieren.
-                 // Wir brauchen auch den Usernamen. Dies erfordert oft einen 'join' oder eine separate Abfrage.
-                 // Einfache Version: Holt Scores, Namen müssten separat geholt werden (oder in einer View).
+                 // TODO WICHTIG: RLS aktivieren!
+                 // TODO WICHTIG: Stellt sicher, dass eine 'profiles' Tabelle existiert mit 'id' (UUID, foreign key zu auth.users)
+                 // und 'display_name' (text), und dass RLS Lesezugriff erlaubt.
                 const { data: scores, error } = await supabase
-                    .from('quiz_scores') // Name deiner Tabelle für Scores
+                    .from('quiz_scores')
                     .select(`
                         score,
                         user_id,
                         profiles ( display_name )
-                     `) // Hole Score, User ID und den Namen aus der verknüpften 'profiles' Tabelle (muss existieren und verknüpft sein!)
-                    .order('score', { ascending: false }) // Höchster Score zuerst
-                    .limit(10); // Top 10
+                     `)
+                    .order('score', { ascending: false })
+                    .limit(10);
 
-                 if (error) throw error;
+                 if (error) {
+                     // Prüfe, ob der Fehler auf eine fehlende 'profiles' Relation hindeutet
+                     if (error.message.includes('relation "profiles" does not exist')) {
+                          console.warn("Hinweis: 'profiles' Tabelle scheint zu fehlen oder ist nicht korrekt verknüpft für Ranking-Namen.");
+                          // Versuche nur Scores zu laden als Fallback
+                          const { data: scoresOnly, error: errorOnly } = await supabase
+                              .from('quiz_scores')
+                              .select('score, user_id')
+                              .order('score', { ascending: false })
+                              .limit(10);
+                          if (errorOnly) throw errorOnly; // Wirf den zweiten Fehler, wenn auch das fehlschlägt
+                          renderRankings(scoresOnly, true); // Rendere ohne Namen
+                          return; // Beende hier
+                     } else {
+                        throw error; // Wirf den ursprünglichen Fehler weiter
+                     }
+                 };
+
                  console.log('Geladene Scores:', scores);
-
-                 rankingsListOl.innerHTML = ''; // Liste leeren
-
-                 if (scores && scores.length > 0) {
-                    scores.forEach((entry, index) => {
-                        const li = document.createElement('li');
-                        const displayName = entry.profiles?.display_name || 'Anonymer User'; // Fallback
-                        // Beispielhafte Rang-Bestimmung (könnte komplexer sein)
-                        let rankClass = 'bad';
-                        if (entry.score >= 75) rankClass = 'good';
-                        else if (entry.score >= 40) rankClass = 'neutral';
-
-                        li.innerHTML = `
-                            <span class="rank-position">${index + 1}.</span>
-                            <img src="placeholder-avatar.png" alt="Avatar" class="avatar-small">
-                            <span class="rank-name">${displayName}</span>
-                            <span class="rank-status ${rankClass}">${entry.score}%</span>
-                        `;
-                         rankingsListOl.appendChild(li);
-                    });
-                 } else {
-                     rankingsListOl.innerHTML = '<li>Noch keine Einträge in der Bestenliste. Spiel das Quiz!</li>';
-                 }
+                 renderRankings(scores, false); // Rendere mit Namen
 
             } catch (error) {
                 console.error('Fehler beim Laden der Bestenliste:', error.message);
-                rankingsListOl.innerHTML = `<li style="color: #e57373;">Fehler beim Laden der Bestenliste: ${error.message}</li>`;
+                rankingsListOl.innerHTML = `<li style="color: #e57373;">Fehler: ${error.message}</li>`;
             }
         }
+        // Hilfsfunktion zum Rendern der Rankings
+        function renderRankings(scores, noNames) {
+             if (!rankingsListOl) return;
+             rankingsListOl.innerHTML = '';
+             if (scores && scores.length > 0) {
+                 scores.forEach((entry, index) => {
+                     const li = document.createElement('li');
+                     const displayName = noNames ? `User ${entry.user_id.substring(0,6)}...` : (entry.profiles?.display_name || 'Anonymer User');
+                     let rankClass = 'bad';
+                     if (entry.score >= 75) rankClass = 'good';
+                     else if (entry.score >= 40) rankClass = 'neutral';
+                     li.innerHTML = `
+                         <span class="rank-position">${index + 1}.</span>
+                         <img src="placeholder-avatar.png" alt="Avatar" class="avatar-small">
+                         <span class="rank-name">${displayName}</span>
+                         <span class="rank-status ${rankClass}">${entry.score}%</span>
+                     `;
+                     rankingsListOl.appendChild(li);
+                 });
+             } else {
+                  rankingsListOl.innerHTML = '<li>Noch keine Einträge vorhanden.</li>';
+             }
+        }
 
-        // Event Listener für Refresh Buttons
-        refreshSolutionsButton.addEventListener('click', fetchSolutions);
-        refreshRankingsButton.addEventListener('click', fetchRankings);
 
-
-        // --- FUNKTIONEN AUFRUFEN (z.B. um KI anzustoßen) ---
-        // Beispiel: Problem einreichen und Lösung generieren lassen
-        problemForm.addEventListener('submit', async (event) => {
+        // --- FUNKTIONEN AUFRUFEN (Edge Functions etc.) ---
+        // Funktion für das Absenden des Problemformulars
+        async function handleProblemSubmit(event) {
              event.preventDefault();
              if (!currentUser) {
-                problemSubmitMessage.textContent = 'Bitte zuerst einloggen.';
-                problemSubmitMessage.style.color = '#e57373';
+                if(problemSubmitMessage) problemSubmitMessage.textContent = 'Bitte zuerst einloggen.';
                 return;
              }
-             const description = problemDescriptionInput.value.trim();
+             const description = problemDescriptionInput ? problemDescriptionInput.value.trim() : '';
              if (!description) {
-                problemSubmitMessage.textContent = 'Bitte beschreibe das Problem.';
-                problemSubmitMessage.style.color = '#e57373';
-                return;
+                 if(problemSubmitMessage) problemSubmitMessage.textContent = 'Bitte beschreibe das Problem.';
+                 return;
              }
-
-             problemSubmitMessage.textContent = 'Sende Problem und fordere Lösung an...';
-             problemSubmitMessage.style.color = '#888';
+             if(problemSubmitMessage) {
+                 problemSubmitMessage.textContent = 'Sende Problem...';
+                 problemSubmitMessage.style.color = '#888';
+             }
 
              try {
-                 // WICHTIG: Hier rufen wir eine Supabase Edge Function auf.
-                 // Der Name 'generate-solution' ist nur ein Beispiel! Du musst diese Function erstellen.
-                 const { data, error } = await supabase.functions.invoke('generate-solution', {
-                     // Daten, die an die Function gesendet werden
+                 // 1. Problem in DB speichern (Beispiel)
+                 const { data: problemData, error: problemError } = await supabase
+                     .from('problems') // Deine Problem-Tabelle
+                     .insert([{
+                         user_id: currentUser.id,
+                         description: description
+                         // Optional: created_at wird oft von DB gesetzt
+                     }])
+                     .select(); // Gibt das eingefügte Objekt zurück
+
+                 if (problemError) throw problemError;
+                 console.log("Problem gespeichert:", problemData);
+
+                 // 2. Edge Function aufrufen (wenn sie existiert)
+                 // TODO: Erstelle eine Supabase Edge Function namens 'generate-solution'
+                 // Sie sollte { problemDescription: "text" } als body erwarten
+                 // und z.B. { solution_text: "generierte lösung" } zurückgeben.
+                  if (problemSubmitMessage) problemSubmitMessage.textContent = 'Fordere Lösung von KI an...';
+
+                 const { data: functionData, error: functionError } = await supabase.functions.invoke('generate-solution', {
                      body: JSON.stringify({ problemDescription: description })
                  });
 
-                 if (error) throw error;
+                 if (functionError) throw functionError;
 
-                 console.log('Antwort von Function:', data);
-                 problemSubmitMessage.textContent = 'Problem eingereicht! Lösung wird generiert und erscheint bald unten.';
-                 problemSubmitMessage.style.color = '#6fbf73';
-                 problemDescriptionInput.value = ''; // Feld leeren
-                 // Optional: Lösungen direkt neu laden
-                 setTimeout(fetchSolutions, 2000); // Kleine Verzögerung
+                 console.log('Antwort von Function:', functionData);
+                 // Hier könntest du die Antwort direkt anzeigen oder in die 'solutions' DB speichern
+                  if (problemSubmitMessage) {
+                     problemSubmitMessage.textContent = 'Lösung generiert! Wird bald angezeigt.';
+                     problemSubmitMessage.style.color = '#6fbf73';
+                 }
+                 if(problemDescriptionInput) problemDescriptionInput.value = '';
+                 setTimeout(fetchSolutions, 1000);
 
              } catch (error) {
-                 console.error('Fehler beim Aufrufen der Function:', error.message);
-                 problemSubmitMessage.textContent = `Fehler: ${error.message}`;
-                 problemSubmitMessage.style.color = '#e57373';
+                 console.error('Fehler beim Problem-Submit oder Funktionsaufruf:', error.message);
+                  if (problemSubmitMessage) {
+                     problemSubmitMessage.textContent = `Fehler: ${error.message}`;
+                     problemSubmitMessage.style.color = '#e57373';
+                 }
              }
-        });
+        }
 
 
         // --- QUIZ LOGIC ---
-        const questions = [ // Beispielfragen bleiben clientseitig für Einfachheit
-            { q: "Wie heißt das legendäre Gerät im 3. Stock?", opts: ["Kaffeemaschine 'Espresso-Desaster'", "Drucker 'Papierfresser'", "Scanner 'Streifenhörnchen'"], correct: 1 },
-            { q: "Welches Tool ist NICHT offiziell im Einsatz?", opts: ["Gummienten-Therapeut", "Keks-Belohnungssystem", "Gedankenlese-Helm"], correct: 2 },
-            { q: "Was ist das Hauptziel von 'badmoodgame'?", opts: ["Probleme ignorieren", "Kreative Lösungen finden", "Highscore im Nichtstun"], correct: 1 }
+        const questions = [ // Beispielfragen
+            { q: "Wie heißt der Drucker?", opts: ["Papierfresser", "LaserLeo", "TintenToni"], correct: 0 },
+            { q: "Ziel des Spiels?", opts: ["Ignorieren", "Lösungen finden", "Kaffee trinken"], correct: 1 }
         ];
         let currentQuestionIndex = 0;
-        let score = 0; // Score als Prozentsatz oder Punkte
+        let correctAnswers = 0; // Zähle richtige Antworten statt Score direkt
 
-        if (startButton) { startButton.addEventListener('click', startQuiz); }
-
+        // Startet das Quiz
         function startQuiz() {
-             if (!currentUser) {
-                 alert('Bitte zuerst einloggen, um das Quiz zu spielen!');
-                 return;
-             }
-            startButton.style.display = 'none';
-            currentQuestionIndex = 0;
-            score = 0;
-            resultContainer.innerHTML = '';
-            quizArea.innerHTML = '';
-            showQuestion();
+             if (!currentUser) { alert('Bitte zuerst einloggen!'); return; }
+             if (!startButton || !quizArea || !resultContainer) { console.error("Quiz Elemente nicht gefunden"); return; }
+             startButton.style.display = 'none';
+             currentQuestionIndex = 0;
+             correctAnswers = 0;
+             resultContainer.innerHTML = '';
+             quizArea.innerHTML = '';
+             showQuestion();
         }
 
+        // Zeigt die nächste Frage
         function showQuestion() {
+             if (!quizArea) return;
             if (currentQuestionIndex >= questions.length) { showResult(); return; }
             const qData = questions[currentQuestionIndex];
             let optionsHTML = '';
@@ -960,70 +1057,59 @@
             quizArea.innerHTML = `<h4>${qData.q}</h4><div class="quiz-options">${optionsHTML}</div>`;
         }
 
+        // Verarbeitet die Antwortauswahl
         function selectAnswer(selectedIndex) {
             if (selectedIndex === questions[currentQuestionIndex].correct) {
-                 // Score erhöhen - hier als Anzahl richtiger Antworten
-                 score++;
+                 correctAnswers++;
             }
             currentQuestionIndex++;
             showQuestion();
         }
 
+        // Zeigt das Ergebnis und speichert es
         async function showResult() {
+             if (!quizArea || !resultContainer || !startButton) return;
              quizArea.innerHTML = 'Quiz beendet!';
              const totalQuestions = questions.length;
-             const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
-             let resultText = `Dein Score: ${score} von ${totalQuestions} (${percentage}%). `;
+             const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+             let resultText = `Dein Score: ${correctAnswers} von ${totalQuestions} (${percentage}%). `;
              resultContainer.innerHTML = resultText + 'Speichere Ergebnis...';
 
-             // --- Score in Datenbank speichern ---
-             if (currentUser) {
+             // Score in Datenbank speichern
+             if (currentUser && supabase) {
                  try {
-                    // WICHTIG: 'quiz_scores' Tabelle braucht Spalten wie user_id (UUID, foreign key zu auth.users), score (integer), created_at (timestamp)
-                    // Hier verwenden wir upsert: Aktualisiert den Score, falls User schon einen hat, sonst fügt es neuen Eintrag hinzu.
-                    // Es ist besser, nur den *besten* Score zu speichern oder jeden Versuch mit Timestamp.
-                    // Einfache Version: Überschreibt existierenden Score für diesen User.
+                     // TODO: RLS für quiz_scores aktivieren!
+                     // TODO: Sicherstellen, dass 'quiz_scores' Tabelle existiert (user_id UUID FK, score INT)
                      const { error } = await supabase
                         .from('quiz_scores')
-                        .upsert({
-                            user_id: currentUser.id,
-                            score: percentage // Speichere Prozentzahl
-                            // Optional: updated_at: new Date()
-                         }, {
-                             onConflict: 'user_id' // Wenn user_id schon existiert, update statt Fehler
-                         });
-
+                        .upsert({ user_id: currentUser.id, score: percentage }, { onConflict: 'user_id' });
                      if (error) throw error;
-
                      resultContainer.innerHTML = resultText + 'Ergebnis gespeichert!';
                      console.log('Quiz Score gespeichert.');
-                     // Bestenliste neu laden, um Update zu sehen
-                     fetchRankings();
-
+                     fetchRankings(); // Lade Bestenliste neu
                  } catch (error) {
                      console.error('Fehler beim Speichern des Quiz Scores:', error.message);
-                      resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler beim Speichern: ${error.message}</span>`;
+                      resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler beim Speichern.</span>`;
                  }
              } else {
-                 resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler: Nicht eingeloggt.</span>`;
+                 resultContainer.innerHTML = resultText + `<span style="color:#e57373">Fehler: Nicht eingeloggt oder Supabase nicht bereit.</span>`;
              }
-             // --- Ende Score Speichern ---
 
-
-            // Visuellen Rang aktualisieren (optional, könnte auch aus DB kommen)
+            // Visuellen Rang aktualisieren
             let newRankClass = 'rank badmoodie';
             let newRankText = 'Rang: Badmoodie';
-             if (percentage >= 75) {
-                newRankClass = 'rank goodmoodie'; newRankText = 'Rang: Goodmoodie';
-            } else if (percentage >= 40) {
-                 newRankClass = 'rank neutralmoodie'; newRankText = 'Rang: Neutralmoodie';
-            }
+             if (percentage >= 75) { newRankClass = 'rank goodmoodie'; newRankText = 'Rang: Goodmoodie'; }
+             else if (percentage >= 40) { newRankClass = 'rank neutralmoodie'; newRankText = 'Rang: Neutralmoodie'; }
              if (rankDisplayElement) {
-                rankDisplayElement.textContent = newRankText;
-                rankDisplayElement.className = newRankClass;
-            }
-            startButton.style.display = 'block'; // Startbutton wieder anzeigen
+                 rankDisplayElement.textContent = newRankText;
+                 rankDisplayElement.className = newRankClass;
+             }
+             startButton.style.display = 'block';
         }
+
+
+        // --- Startet die App nach Laden des DOM ---
+        document.addEventListener('DOMContentLoaded', initializeUI);
 
     </script>
 
