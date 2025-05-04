@@ -4,57 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>badmoodgame - Spiel die Lösung!</title>
-
-    <!-- Supabase JS Library via CDN (OHNE defer) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        /* CSS - WICHTIG: display: none für login-modal wieder aktivieren! */
-        #login-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); z-index: 1000;
-            display: none; /* Startet wieder versteckt */
-            align-items: center; justify-content: center;
-            /* border: 3px dashed yellow; <-- Debug-Rand entfernt */
-        }
-        #main-content {
-             display: none; /* Startet versteckt */
-             /* border: 2px dashed cyan; <-- Debug-Rand entfernt */
-        }
-         /* --- Restliches CSS wie zuvor --- */
-         html { scroll-behavior: smooth; }
-         body { background-color: #1a1a1a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; line-height: 1.7; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 3px 3px; }
-         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-         header { text-align: center; padding: 25px 0 15px 0; border-bottom: 1px solid #444; margin-bottom: 0; }
-         header h1 { margin: 0; font-size: 2.8em; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
-         nav { background-color: #111; border-bottom: 1px solid #444; padding: 8px 0; margin-bottom: 30px; text-align: center; border-radius: 0 0 20px 20px; }
-         nav ul { list-style: none; padding: 0; margin: 0; } nav li { display: inline-block; margin: 0 15px; } nav a { color: #ccc; text-decoration: none; font-size: 1.1em; padding: 5px 10px; border-radius: 15px; } nav a:hover, nav a.active { background-color: #333; color: #fff; }
-         .login-box { background-color: #222; padding: 30px 40px; border-radius: 25px; border: 1px solid #555; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 5px 25px rgba(0,0,0,0.4); }
-         .login-box h2 { margin-top: 0; margin-bottom: 20px; color: #fff; font-size: 1.5em; }
-         .login-box label { display: block; margin-bottom: 5px; color: #ccc; text-align: left;}
-         .login-box input { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; background-color: #111; color: #fff; border: 1px solid #555; border-radius: 15px; font-family: inherit; font-size: 1em; }
-         .login-box button { padding: 12px 30px; background-color: #eee; color: #000; border: none; border-radius: 20px; font-size: 1.1em; font-weight: bold; text-transform: uppercase; cursor: pointer; font-family: inherit; margin-top: 10px; }
-         #auth-message { color: #e57373; margin-top: 15px; min-height: 1.2em; font-size: 0.9em;} #auth-message.success { color: #6fbf73; }
-         .auth-switch, .forgot-password-link { margin-top: 20px; font-size: 0.9em; } .auth-switch a, .forgot-password-link a { color: #aaa; text-decoration: underline; cursor: pointer; }
-         .user-profile { display: flex; align-items: center; justify-content: flex-end; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px dashed #555; }
-         .user-profile img.avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #666; margin-right: 12px; background-color: #333; } .user-profile .username { margin-right: 15px; font-weight: bold; font-size: 1.1em; } .user-profile .rank { font-size: 0.95em; padding: 5px 12px; background-color: #333; border: 1px solid #666; border-radius: 15px; } .user-profile .rank.goodmoodie { background-color: #6fbf73; color: #000; } .user-profile .rank.badmoodie { background-color: #e57373; color: #000; }
-         #logout-button { background: none; border: 1px solid #888; color: #ccc; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; margin-left: 15px; cursor: pointer; font-family: inherit; }
-         section { margin-bottom: 50px; padding: 30px; background-color: rgba(10, 10, 10, 0.7); border: 1px solid #444; border-radius: 25px; }
-         /* --- Restliches CSS --- */
+        /* Kompletter CSS Code von vorher */
+        html { scroll-behavior: smooth; }
+        body { background-color: #1a1a1a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; line-height: 1.7; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 3px 3px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 25px 0 15px 0; border-bottom: 1px solid #444; margin-bottom: 0; }
+        header h1 { margin: 0; font-size: 2.8em; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #fff; } header h1 .highlight { font-weight: bolder; }
+        nav { background-color: #111; border-bottom: 1px solid #444; padding: 8px 0; margin-bottom: 30px; text-align: center; border-radius: 0 0 20px 20px; }
+        nav ul { list-style: none; padding: 0; margin: 0; } nav li { display: inline-block; margin: 0 15px; } nav a { color: #ccc; text-decoration: none; font-size: 1.1em; padding: 5px 10px; border-radius: 15px; } nav a:hover, nav a.active { background-color: #333; color: #fff; }
+        #main-content { display: none; }
+        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .login-box { background-color: #222; padding: 30px 40px; border-radius: 25px; border: 1px solid #555; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 5px 25px rgba(0,0,0,0.4); }
+        .login-box h2 { margin-top: 0; margin-bottom: 20px; color: #fff; font-size: 1.5em; }
+        .login-box label { display: block; margin-bottom: 5px; color: #ccc; text-align: left;}
+        .login-box input[type="text"], .login-box input[type="email"], .login-box input[type="password"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; background-color: #111; color: #fff; border: 1px solid #555; border-radius: 15px; font-family: inherit; font-size: 1em; }
+        .login-box button { padding: 12px 30px; background-color: #eee; color: #000; border: none; border-radius: 20px; font-size: 1.1em; font-weight: bold; text-transform: uppercase; cursor: pointer; font-family: inherit; margin-top: 10px; } .login-box button:hover { background-color: #fff; }
+        #auth-message { color: #e57373; margin-top: 15px; min-height: 1.2em; font-size: 0.9em;} #auth-message.success { color: #6fbf73; }
+        .auth-switch, .forgot-password-link { margin-top: 20px; font-size: 0.9em; } .auth-switch a, .forgot-password-link a { color: #aaa; text-decoration: underline; cursor: pointer; } .auth-switch a:hover, .forgot-password-link a:hover { color: #fff; }
+        .user-profile { display: flex; align-items: center; justify-content: flex-end; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px dashed #555; }
+        .user-profile img.avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #666; margin-right: 12px; background-color: #333; } .user-profile .username { margin-right: 15px; font-weight: bold; font-size: 1.1em; } .user-profile .rank { font-size: 0.95em; padding: 5px 12px; background-color: #333; border: 1px solid #666; border-radius: 15px; } .user-profile .rank.goodmoodie { background-color: #6fbf73; color: #000; } .user-profile .rank.badmoodie { background-color: #e57373; color: #000; }
+        #logout-button { background: none; border: 1px solid #888; color: #ccc; padding: 4px 10px; border-radius: 15px; font-size: 0.9em; margin-left: 15px; cursor: pointer; font-family: inherit; }
+        section { margin-bottom: 50px; padding: 30px; background-color: rgba(10, 10, 10, 0.7); border: 1px solid #444; border-radius: 25px; }
+        /* --- Restliches CSS --- */
     </style>
 </head>
 <body>
 
-    <!-- Login Modal (Startet versteckt) -->
-    <div id="login-modal" style="display: none;">
+    <div id="login-modal" style="display: none;"> <!-- Startet versteckt -->
         <div class="login-box">
-             <p style="color: #ccc;">Lade Authentifizierung...</p>
+             <!-- Inhalt wird dynamisch geladen -->
+             <p style="color: #ccc;">Lade...</p>
         </div>
     </div>
 
-    <!-- Hauptinhalt der Seite (Startet versteckt) -->
-    <div id="main-content" style="display: none;">
-        <!-- Kompletter Inhalt von Header bis Footer hier -->
+    <div id="main-content" style="display: none;"> <!-- Startet versteckt -->
         <header><h1>bad<span class="highlight">mood</span>game</h1></header>
         <nav>
             <ul>
@@ -70,13 +55,13 @@
                 <span class="rank badmoodie" id="user-rank-display">Rang: Badmoodie</span>
                 <button id="logout-button" style="display: none;">Logout</button>
             </div>
-             <!-- Sektionen hier (gekürzt zur Übersicht) -->
-             <section id="problems"><h2>Probleme</h2>...</section>
-             <section id="solutions"><h2>Lösungen</h2>...</section>
-             <section id="quiz"><h2>Quiz</h2>...</section>
+            <!-- Sektionen (gekürzt) -->
+            <section id="problems"><h2>Probleme</h2>...</section>
+            <section id="solutions"><h2>Lösungen</h2>...</section>
+            <section id="quiz"><h2>Quiz</h2>...</section>
         </div>
         <footer><p>© 2023 badmoodgame.</p></footer>
-    </div> <!-- Ende #main-content -->
+    </div>
 
     <script>
         console.log("SCRIPT START");
@@ -101,7 +86,7 @@
         let loginModal, loginBox, mainContent, usernameDisplay, rankDisplayElement, logoutButton,
             problemForm, problemDescriptionInput, problemSubmitMessage, solutionListUl,
             refreshSolutionsButton, rankingsListOl, refreshRankingsButton, quizArea,
-            resultContainer, startButton;
+            resultContainer, startButton; // ... und alle anderen, die du brauchst
 
         // --- AUTHENTICATION VARIABLEN ---
         let currentUser = null;
@@ -110,193 +95,244 @@
         // --- FUNKTIONSDEFINITIONEN ---
 
         function assignDomElements() {
-             console.log("assignDomElements: Suche Elemente...");
-             loginModal = document.getElementById('login-modal');
-             loginBox = loginModal ? loginModal.querySelector('.login-box') : null;
-             mainContent = document.getElementById('main-content');
-             usernameDisplay = document.getElementById('user-username');
-             rankDisplayElement = document.getElementById('user-rank-display');
-             logoutButton = document.getElementById('logout-button');
-             problemForm = document.getElementById('problem-form');
-             problemDescriptionInput = document.getElementById('problem-description');
-             problemSubmitMessage = document.getElementById('problem-submit-message');
-             solutionListUl = document.getElementById('solution-list-ul');
-             refreshSolutionsButton = document.getElementById('refresh-solutions-button');
-             rankingsListOl = document.getElementById('rankings-list');
-             refreshRankingsButton = document.getElementById('refresh-rankings-button');
-             quizArea = document.getElementById('js-quiz-area');
-             resultContainer = document.getElementById('quiz-result');
-             startButton = document.getElementById('start-js-quiz');
+            console.log("assignDomElements: Suche Elemente...");
+            loginModal = document.getElementById('login-modal');
+            loginBox = loginModal ? loginModal.querySelector('.login-box') : null;
+            mainContent = document.getElementById('main-content');
+            usernameDisplay = document.getElementById('user-username');
+            rankDisplayElement = document.getElementById('user-rank-display');
+            logoutButton = document.getElementById('logout-button');
+            problemForm = document.getElementById('problem-form');
+            problemDescriptionInput = document.getElementById('problem-description');
+            problemSubmitMessage = document.getElementById('problem-submit-message');
+            solutionListUl = document.getElementById('solution-list-ul');
+            refreshSolutionsButton = document.getElementById('refresh-solutions-button');
+            rankingsListOl = document.getElementById('rankings-list');
+            refreshRankingsButton = document.getElementById('refresh-rankings-button');
+            quizArea = document.getElementById('js-quiz-area');
+            resultContainer = document.getElementById('quiz-result');
+            startButton = document.getElementById('start-js-quiz');
 
-             // Kritische Prüfung für UI-Wechsel
-             if (!loginModal || !mainContent || !loginBox) {
-                 console.error("FEHLER: Kritische Elemente (loginModal, mainContent, loginBox) nicht gefunden!");
+            if (!loginModal || !mainContent || !loginBox || !logoutButton || !usernameDisplay) { // Füge wichtige Elemente hinzu
+                 console.error("FEHLER: Kritische UI-Elemente (loginModal, mainContent, loginBox, logoutButton, usernameDisplay) nicht gefunden!");
                  return false;
              }
-              console.log("assignDomElements: Elemente gefunden.");
+             console.log("assignDomElements: Elemente gefunden.");
              return true;
         }
 
         function showUIElement(element) {
-            if (!element) { console.warn("Versuch, nicht existierendes Element anzuzeigen."); return; }
-             try {
-                 element.style.display = (element.id === 'login-modal' || element.classList.contains('login-box') || element.classList.contains('user-profile')) ? 'flex' : 'block';
-             } catch (e) { console.error(`Fehler beim Anzeigen von Element #${element.id}:`, e); }
+             if (!element) { console.warn("Versuch, nicht existierendes Element anzuzeigen."); return; }
+             // Verwende immer 'flex' für das Modal, sonst 'block'
+             element.style.display = (element.id === 'login-modal') ? 'flex' : 'block';
         }
         function hideUIElement(element) {
             if (!element) { console.warn("Versuch, nicht existierendes Element zu verstecken."); return; }
-             try {
-                 element.style.display = 'none';
-             } catch (e) { console.error(`Fehler beim Verstecken von Element #${element.id}:`, e); }
+             element.style.display = 'none';
         }
 
-        // UI Update Funktionen (showLoginForm, showRegisterForm, etc.)
+        // UI Update Funktionen (showLoginForm etc.)
         function showLoginForm(message = '', messageClass = '') {
-            console.log("showLoginForm wird aufgerufen");
-            if (!loginModal || !loginBox) { console.error("showLoginForm: UI nicht bereit."); return; }
+            console.log("showLoginForm aufgerufen");
+            if (!loginBox || !loginModal) return;
             try {
                 loginBox.innerHTML = `<h2>Login</h2><form id="actual-login-form"><label for="login-email">E-Mail:</label><input type="email" id="login-email" required autocomplete="email"><label for="login-password">Passwort:</label><input type="password" id="login-password" required autocomplete="current-password"><div id="auth-message" class="${messageClass}">${message}</div><button type="submit">Login</button></form><div class="forgot-password-link"><a data-action="forgot-password">Passwort vergessen?</a></div><div class="auth-switch">Noch kein Konto? <a data-action="show-register">Registrieren</a></div>`;
-                showUIElement(loginModal); // Sicherstellen, dass Modal sichtbar ist
-            } catch (e) { console.error("Fehler in showLoginForm:", e); }
+                showUIElement(loginModal); // Zeige das Modal explizit
+            } catch(e) { console.error("Fehler in showLoginForm:", e); }
         }
         function showRegisterForm(message = '', messageClass = '') {
-             console.log("showRegisterForm wird aufgerufen");
-             if (!loginModal || !loginBox) { console.error("showRegisterForm: UI nicht bereit."); return; }
-              try {
+            console.log("showRegisterForm aufgerufen");
+             if (!loginBox || !loginModal) return;
+             try {
                  loginBox.innerHTML = `<h2>Registrieren</h2><form id="actual-register-form"><label for="register-email">E-Mail:</label><input type="email" id="register-email" required autocomplete="email"><label for="register-password">Passwort (min. 6):</label><input type="password" id="register-password" required minlength="6" autocomplete="new-password"><label for="register-username">Anzeigename:</label><input type="text" id="register-username" required autocomplete="username"><div id="auth-message" class="${messageClass}">${message}</div><button type="submit">Registrieren</button></form><div class="auth-switch">Konto? <a data-action="show-login">Login</a></div>`;
                  showUIElement(loginModal);
               } catch(e) { console.error("Fehler in showRegisterForm:", e); }
         }
         function showForgotPasswordForm() {
-            console.log("showForgotPasswordForm wird aufgerufen");
-            if (!loginModal || !loginBox) { console.error("showForgotPasswordForm: UI nicht bereit."); return; }
-            try {
+            console.log("showForgotPasswordForm aufgerufen");
+             if (!loginBox || !loginModal) return;
+             try {
                 loginBox.innerHTML = `<h2>Passwort zurücksetzen</h2><form id="forgot-password-form"><label for="forgot-email">E-Mail:</label><input type="email" id="forgot-email" required autocomplete="email"><div id="auth-message"></div><button type="submit">Reset-Link senden</button></form><div class="auth-switch">Zurück <a data-action="show-login">Login</a></div>`;
                  showUIElement(loginModal);
             } catch(e) { console.error("Fehler in showForgotPasswordForm:", e); }
         }
         function showUpdatePasswordForm() {
-            console.log("showUpdatePasswordForm wird aufgerufen");
-             if (!loginModal || !loginBox) { console.error("showUpdatePasswordForm: UI nicht bereit."); return; }
+            console.log("showUpdatePasswordForm aufgerufen");
+            if (!loginBox || !loginModal) return;
             try {
                 loginBox.innerHTML = `<h2>Neues Passwort</h2><form id="update-password-form"><label for="update-password">Neues Passwort (min. 6):</label><input type="password" id="update-password" required minlength="6" autocomplete="new-password"><div id="auth-message"></div><button type="submit">Speichern</button></form><div class="auth-switch"><a data-action="show-login">Abbrechen</a></div>`;
                 showUIElement(loginModal);
             } catch(e) { console.error("Fehler in showUpdatePasswordForm:", e); }
         }
         function showConfirmationMessage(email) {
-             console.log("showConfirmationMessage wird aufgerufen für:", email);
-             if (!loginModal || !loginBox) { console.error("showConfirmationMessage: UI nicht bereit."); return; }
+             console.log("showConfirmationMessage aufgerufen für:", email);
+             if (!loginBox || !loginModal) return;
              userEmailForConfirmation = email;
               try {
+                 // Füge data-action zu Button hinzu
                  loginBox.innerHTML = `<h2>E-Mail Bestätigung</h2><p>Mail an <strong>${email}</strong> gesendet. Bitte Link klicken.</p><div id="auth-message"></div><button data-action="resend-confirmation" style="background:#555;color:#fff;">Erneut senden</button><div class="auth-switch"><a data-action="logout">Logout</a></div>`;
                  showUIElement(loginModal);
               } catch(e) { console.error("Fehler in showConfirmationMessage:", e); }
         }
 
-        // Handler Funktionen (handleLogin, handleRegister etc.)
-        async function handleLogin(formElement) { /* Definition wie zuvor */ }
-        async function handleRegister(formElement) { /* Definition wie zuvor */ }
-        async function handleForgotPassword(formElement) { /* Definition wie zuvor */ }
-        async function handleUpdatePassword(formElement) { /* Definition wie zuvor */ }
-        async function handleResendConfirmation() { /* Definition wie zuvor */ }
-        async function handleLogout() { /* Definition wie zuvor */ }
-        function handleAuthFormSubmit(event) { /* Definition wie zuvor */ }
-        function handleAuthLinkClick(event) { /* Definition wie zuvor */ }
+        // Handler Funktionen (handleLogin, etc. - Keine Änderungen an der Logik nötig)
+        async function handleLogin(formElement) {
+             const emailInput = formElement.querySelector('#login-email'); const passwordInput = formElement.querySelector('#login-password'); const messageDiv = formElement.querySelector('#auth-message');
+             if (!emailInput || !passwordInput || !messageDiv || !supabase) return;
+             messageDiv.textContent = 'Logge ein...'; messageDiv.className = '';
+             try {
+                 const { data, error } = await supabase.auth.signInWithPassword({ email: emailInput.value, password: passwordInput.value });
+                 if (error) throw error;
+                 if (data.user && !data.user.email_confirmed_at) { showConfirmationMessage(data.user.email); }
+                 else if (data.user) { messageDiv.textContent = 'Erfolgreich! Lade...'; messageDiv.className = 'success'; }
+                 else { throw new Error("Keine User-Daten."); }
+             } catch (error) { messageDiv.textContent = `Fehler: ${error.message}`; }
+        }
+        async function handleRegister(formElement) {
+            const emailInput = formElement.querySelector('#register-email'); const passwordInput = formElement.querySelector('#register-password'); const usernameInput = formElement.querySelector('#register-username'); const messageDiv = formElement.querySelector('#auth-message');
+            if (!emailInput || !passwordInput || !usernameInput || !messageDiv || !supabase) return;
+            messageDiv.textContent = 'Registriere...'; messageDiv.className = '';
+            if (!usernameInput.value.trim()) { messageDiv.textContent = 'Anzeigename fehlt.'; return; } if (passwordInput.value.length < 6) { messageDiv.textContent = 'Passwort zu kurz.'; return; }
+            try {
+                const { data, error } = await supabase.auth.signUp({ email: emailInput.value, password: passwordInput.value, options: { data: { display_name: usernameInput.value.trim() } } });
+                if (error) throw error; showConfirmationMessage(emailInput.value);
+            } catch (error) { showRegisterForm(`Fehler: ${error.message}`); }
+        }
+        async function handleForgotPassword(formElement) {
+            const emailInput = formElement.querySelector('#forgot-email'); const messageDiv = formElement.querySelector('#auth-message');
+            if (!emailInput || !messageDiv || !supabase) return;
+            messageDiv.textContent = 'Sende Link...'; messageDiv.className = '';
+            try {
+                const redirectURL = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+                const { error } = await supabase.auth.resetPasswordForEmail(emailInput.value, { redirectTo: redirectURL });
+                if (error) throw error; messageDiv.textContent = 'Reset-Link gesendet.'; messageDiv.className = 'success';
+            } catch (error) { messageDiv.textContent = `Fehler: ${error.message}`; }
+        }
+        async function handleUpdatePassword(formElement) {
+             const passwordInput = formElement.querySelector('#update-password'); const messageDiv = formElement.querySelector('#auth-message');
+             if (!passwordInput || !messageDiv || !supabase) return;
+             if (passwordInput.value.length < 6) { messageDiv.textContent = 'Passwort zu kurz.'; return; }
+             messageDiv.textContent = 'Speichere...'; messageDiv.className = '';
+             try {
+                 const { data, error } = await supabase.auth.updateUser({ password: passwordInput.value });
+                 if (error) throw error; showLoginForm('Passwort geändert! Bitte einloggen.', 'success');
+             } catch (error) { messageDiv.textContent = `Fehler: ${error.message}`; }
+        }
+        async function handleResendConfirmation() {
+             const email = userEmailForConfirmation; const messageDiv = loginBox ? loginBox.querySelector('#auth-message') : null;
+             if (!email || !messageDiv || !supabase) { console.error("Resend nicht möglich."); if(messageDiv) messageDiv.textContent = "Fehler: E-Mail fehlt."; return; }
+             messageDiv.textContent = `Sende Mail an ${email}...`; messageDiv.className = '';
+             try {
+                 const { error } = await supabase.auth.resend({ type: 'signup', email: email });
+                 if (error) throw error; messageDiv.textContent = 'Mail erneut gesendet.'; messageDiv.className = 'success';
+             } catch (error) { messageDiv.textContent = `Fehler: ${error.message}`; }
+        }
+        async function handleLogout() {
+            if (!supabase) return;
+            try { await supabase.auth.signOut(); console.log("Logout erfolgreich"); }
+            catch (error) { alert(`Logout Fehler: ${error.message}`); }
+        }
 
-        // Datenbank & andere Funktionen (Platzhalter)
+        // --- Event Delegation Handler ---
+        function handleAuthFormSubmit(event) {
+             event.preventDefault(); const formId = event.target.id; console.log(`Submit: ${formId}`);
+             if (formId === 'actual-login-form') handleLogin(event.target);
+             else if (formId === 'actual-register-form') handleRegister(event.target);
+             else if (formId === 'forgot-password-form') handleForgotPassword(event.target);
+             else if (formId === 'update-password-form') handleUpdatePassword(event.target);
+        }
+        function handleAuthLinkClick(event) {
+             const target = event.target.closest('a[data-action], button[data-action]'); // Finde Link oder Button mit data-action
+             if (target && target.dataset.action) {
+                 event.preventDefault();
+                 const action = target.dataset.action;
+                 console.log(`Click Aktion: ${action}`);
+                 if (action === 'show-register') showRegisterForm();
+                 else if (action === 'show-login') showLoginForm();
+                 else if (action === 'forgot-password') showForgotPasswordForm();
+                 else if (action === 'logout') handleLogout();
+                 else if (action === 'resend-confirmation') handleResendConfirmation();
+             }
+        }
+
+        // --- Datenbank & andere Funktionen (Platzhalter) ---
         async function fetchSolutions() { console.log("Lade Lösungen..."); }
         async function fetchRankings() { console.log("Lade Rankings..."); }
         async function handleProblemSubmit(event) { event.preventDefault(); console.log("Problem einreichen..."); }
         function startQuiz() { console.log("Starte Quiz..."); }
-        // ... (weitere Platzhalter für Quiz-Logik)
+        // ... (weitere Platzhalter)
 
-        // --- HAUPTINITIALISIERUNG & AUTH LISTENER ---
+        // --- INITIALISIERUNG & AUTH STATE LISTENER ---
         function initializeApp() {
              console.log("initializeApp: Start");
              if (initError) {
                  document.body.innerHTML = `<div style="color:red;padding:20px;">FATAL ERROR: ${initError.message}</div>`; return;
              }
-             // DOM Elemente holen MUSS erfolgreich sein
              if (!assignDomElements()) {
-                 document.body.innerHTML = `<div style="color:red;padding:20px;">FEHLER: Kritische HTML Elemente fehlen!</div>`; return;
+                 document.body.innerHTML = `<div style="color:red;padding:20px;">FEHLER: Wichtige HTML Elemente fehlen!</div>`; return;
              }
 
-             // Event Delegation Listener für das Modal
+             // Event Delegation Listener für das Modal setzen
              if (loginBox) {
                  loginBox.addEventListener('submit', handleAuthFormSubmit);
                  loginBox.addEventListener('click', handleAuthLinkClick);
                  console.log("initializeApp: Event Delegation für loginBox gesetzt.");
-             } else { console.error("initializeApp: LoginBox fehlt, kann Delegation nicht setzen."); return; }
+             } else { console.error("initializeApp: LoginBox fehlt!"); return; }
 
-             // Auth State Listener
+             // Statische Listener hinzufügen
+             if (logoutButton) logoutButton.addEventListener('click', handleLogout); else console.warn("Logout Button fehlt.");
+             if (refreshSolutionsButton) refreshSolutionsButton.addEventListener('click', fetchSolutions); else console.warn("Refresh Solutions Button fehlt.");
+             if (refreshRankingsButton) refreshRankingsButton.addEventListener('click', fetchRankings); else console.warn("Refresh Rankings Button fehlt.");
+             if (problemForm) problemForm.addEventListener('submit', handleProblemSubmit); else console.warn("Problem Form fehlt.");
+             if (startButton) startButton.addEventListener('click', startQuiz); else console.warn("Start Quiz Button fehlt.");
+             console.log("initializeApp: Statische Listener gesetzt.");
+
+             // Auth State Listener setzen
              if (supabase) {
                  console.log("initializeApp: Setze onAuthStateChange Listener.");
                  supabase.auth.onAuthStateChange((event, session) => {
-                    console.log(`onAuthStateChange: Event=${event}, Session vorhanden=${!!session}`);
-                    // Stelle sicher, dass UI Elemente noch gültig sind
-                    if (!loginModal || !mainContent || !logoutButton || !usernameDisplay) {
-                         console.error("onAuthStateChange: Kritische UI Elemente nicht mehr gefunden!");
-                         return;
-                     }
+                    console.log(`onAuthStateChange: Event=${event}, Session=${session ? 'vorhanden' : 'null'}`);
+                    if (!loginModal || !mainContent) { console.error("onAuthStateChange: Modal/MainContent fehlt!"); return; }
 
-                    try { // Füge try-catch um die UI-Logik hinzu
+                    try {
                         if (event === 'PASSWORD_RECOVERY') {
-                            console.log("onAuthStateChange: Zeige Update Password Form.");
-                            hideUIElement(mainContent); // Verstecke Hauptinhalt explizit
-                            showUpdatePasswordForm();
-                        } else if (event === 'SIGNED_IN' && session) {
-                            if (session.user.email_confirmed_at || !session.user.email) {
-                                console.log("onAuthStateChange: User eingeloggt & bestätigt. Zeige mainContent.");
-                                currentUser = session.user;
-                                usernameDisplay.textContent = currentUser.user_metadata?.display_name || 'User';
-                                hideUIElement(loginModal);
-                                showUIElement(mainContent);
-                                showUIElement(logoutButton);
-                                // fetchSolutions(); fetchRankings(); // Ggf. später wieder aktivieren
-                            } else {
-                                console.log("onAuthStateChange: User eingeloggt, aber nicht bestätigt. Zeige Confirmation.");
-                                currentUser = null;
-                                hideUIElement(mainContent);
-                                hideUIElement(logoutButton); // Logout Button nicht anzeigen
-                                showConfirmationMessage(session.user.email);
-                            }
-                        } else if (!session) { // Deckt SIGNED_OUT, INITIAL_SESSION null, etc. ab
-                            console.log("onAuthStateChange: Keine Session oder ausgeloggt. Zeige Login.");
-                            currentUser = null;
-                            hideUIElement(mainContent);
-                            hideUIElement(logoutButton);
-                            usernameDisplay.textContent = 'Spieler'; // Reset Name
-                             if (rankDisplayElement) { // Reset Rank
-                                 rankDisplayElement.textContent = 'Rang: Badmoodie';
-                                 rankDisplayElement.className = 'rank badmoodie';
+                            console.log("Auth Event: PASSWORD_RECOVERY -> Zeige Update Form");
+                            hideUIElement(mainContent); showUpdatePasswordForm(); // Zeige Update-Form, Modal wird in Funktion sichtbar gemacht
+                        } else if (session) { // Session vorhanden
+                             if (session.user.email_confirmed_at || !session.user.email) {
+                                 console.log("Auth Event: SIGNED_IN (bestätigt) -> Zeige Main Content");
+                                 currentUser = session.user;
+                                 if(usernameDisplay) usernameDisplay.textContent = currentUser.user_metadata?.display_name || 'User';
+                                 hideUIElement(loginModal); showUIElement(mainContent);
+                                 if(logoutButton) showUIElement(logoutButton);
+                                 // Daten laden
+                                 // fetchSolutions(); fetchRankings();
+                             } else {
+                                 console.log("Auth Event: SIGNED_IN (unbestätigt) -> Zeige Confirmation");
+                                 currentUser = null; hideUIElement(mainContent); if(logoutButton) hideUIElement(logoutButton);
+                                 showConfirmationMessage(session.user.email); // Modal wird in Funktion sichtbar gemacht
                              }
-                            if(event !== 'PASSWORD_RECOVERY') { // Nur Login zeigen, wenn nicht PW Recovery
-                                showLoginForm();
-                            }
-                        } else { console.log("onAuthStateChange: Anderer Status - tue nichts explizit."); }
+                        } else { // Keine Session (INITIAL_SESSION null, SIGNED_OUT, USER_DELETED)
+                             console.log("Auth Event: Keine Session -> Zeige Login Form");
+                             currentUser = null; hideUIElement(mainContent); if(logoutButton) hideUIElement(logoutButton);
+                             if(usernameDisplay) usernameDisplay.textContent = 'Spieler';
+                             if(rankDisplayElement) { rankDisplayElement.textContent = 'Rang: Badmoodie'; rankDisplayElement.className = 'rank badmoodie'; }
+                             if(event !== 'PASSWORD_RECOVERY') { // Nur zeigen wenn nicht gerade PW Recovery läuft
+                                  showLoginForm(); // Modal wird in Funktion sichtbar gemacht
+                             }
+                        }
                     } catch (uiError) {
-                         console.error("Fehler beim UI Update in onAuthStateChange:", uiError);
-                         // Fallback: Zeige Login, wenn etwas schiefgeht
-                         showLoginForm("Ein UI-Fehler ist aufgetreten.");
+                         console.error("Fehler im onAuthStateChange UI Update:", uiError);
+                         // Notfall-Fallback: Zeige Login-Formular, falls etwas schiefgeht
+                         showLoginForm("Ein UI Fehler ist aufgetreten.");
                     }
                  });
-                 console.log("initializeApp: onAuthStateChange Listener gesetzt.");
-             } else { console.error("initializeApp: Supabase nicht bereit, kann Listener nicht setzen."); return; }
-
-             // Statische Listener hinzufügen (erst wenn Supabase bereit ist)
-             if (logoutButton) logoutButton.addEventListener('click', handleLogout);
-             if (refreshSolutionsButton) refreshSolutionsButton.addEventListener('click', fetchSolutions);
-             if (refreshRankingsButton) refreshRankingsButton.addEventListener('click', fetchRankings);
-             if (problemForm) problemForm.addEventListener('submit', handleProblemSubmit);
-             if (startButton) startButton.addEventListener('click', startQuiz);
-             console.log("initializeApp: Statische Listener gesetzt.");
+             } else { console.error("initializeApp: Supabase nicht bereit!"); }
 
              console.log("initializeApp: Beendet.");
-         } // Ende initializeApp
-
+         }
 
         // --- START DER ANWENDUNG ---
-        // Warte auf DOMContentLoaded, DANN rufe initializeApp auf
         if (document.readyState === 'loading') {
              console.log("Warte auf DOMContentLoaded...");
              document.addEventListener('DOMContentLoaded', initializeApp);
